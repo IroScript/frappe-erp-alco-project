@@ -1,97 +1,83 @@
-# Frappe Framework & ERPNext Latest Version Master Rulebook & Guidelines (`gemini.md`)
+# MASTER RULEBOOK: FRAPPE FRAMEWORK & ERPNEXT VERSION 16+ ONLY (`gemini.md`)
 
-> **গুরুত্বপূর্ণ নির্দেশিকা (Master Directive):**
-> এই প্রজেক্টে **Frappe Framework** এবং **Frappe ERPNext**-এর **সর্বশেষ ভার্সন (Latest Version - Version 16+)** ইনস্টল এবং ব্যবহার করা আবশ্যক।
-> **কোনো অবস্থাতেই কোনো পুরাতন ভার্সন (Old/Deprecated Version - v12, v13, v14 বা পুরনো API/Syntax) এর কোড লেখা যাবে না।** সকল কোড, কাস্টম মডিউল, হুকস এবং সিনট্যাক্স অবশ্যই Frappe & ERPNext Latest Version Standard অনুযায়ী লিখতে হবে।
+> 🚨 **CRITICAL MANDATE FOR AI CODING ASSISTANTS & DEVELOPERS** 🚨
+> 
+> 1. **STRICT VERSION LOCK:** You must **ONLY** use **Frappe Framework Version 16+** and **ERPNext Version 16+**.
+> 2. **NO OLD VERSION CODE (STRICTLY PROHIBITED):** Under NO circumstances are you allowed to write code for **Version 15 (v15)**, **Version 14 (v14)**, **Version 13 (v13)**, or **Version 12 (v12)**. Writing any legacy syntax, deprecated functions, or v15/older APIs is an absolute failure.
+> 3. **MANDATORY DOCUMENTATION & SOURCE VERIFICATION:** Before writing any line of code, you **MUST** inspect and cross-verify the syntax against official **Frappe / ERPNext Version 16 (v16)** documentation and local v16 source files in `frappe-framework-v16/` and `erpnext-v16/`.
 
 ---
 
-## 1. ইনস্টলেশন এবং সেটআপ নির্দেশিকা (Installation & Setup Guide)
+## 1. Installation & Environment Overview (Latest Version 16)
 
-### ১.১ Frappe Bench ও পরিবেশ প্রস্তুতি (Bench Setup)
-সর্বশেষ Frappe Framework ও ERPNext রান এবং ডেভেলপ করার জন্য Bench CLI ও Docker/WSL এনভায়রনমেন্ট প্রয়োজন:
-```powershell
-# Pip এর মাধ্যমে frappe-bench ইনস্টল
-pip install frappe-bench
+### 1.1 Local Repositories & Docker Integration
+- **Frappe Framework v16:** Cloned in `frappe-framework-v16/` (branch: `develop` / v16).
+- **ERPNext v16:** Cloned in `erpnext-v16/` (branch: `develop` / v16).
+- **Docker Desktop:** Running and configured for containerized execution.
 
-# Frappe Bench সংস্করণ পরীক্ষা
-bench --version
-```
-
-### ১.২ সর্বশেষ ভার্সন দিয়ে Bench ইনিশিয়ালাইজেশন (Initialize Bench with Latest Version)
+### 1.2 Bench Execution Commands (v16)
 ```bash
-# Frappe Framework এর সর্বশেষ (Version 16 / develop) সংস্করণ সহ Bench তৈরি
+# Initialize bench with Frappe Framework Version 16
 bench init frappe-bench --frappe-branch develop
 
-# প্রজেক্ট ডিরেক্টরিতে প্রবেশ
+# Create site and install ERPNext Version 16
 cd frappe-bench
-
-# নতুন লোকাল সাইট তৈরি
 bench new-site site1.local
-```
-
-### ১.৩ ERPNext এর সর্বশেষ ভার্সন ইনস্টলেশন (Get & Install Latest ERPNext)
-```bash
-# ERPNext এর সর্বশেষ ভার্সন ডাউনলোড
 bench get-app erpnext --branch develop
-
-# লোকাল সাইটে ERPNext ইনস্টল
 bench install-app erpnext site1.local
-
-# ডেভেলপমেন্ট সার্ভার চালু
 bench start
 ```
 
 ---
 
-## 2. কঠোর কোডিং স্ট্যান্ডার্ডস (Strict Coding Directives - Latest Version Only)
+## 2. Strict Coding Directives for AI Assistant
 
-### ❌ বর্জনীয় (DO NOT USE - Legacy / Old Version Code):
-- **Old Syntax:** `frappe.db.get_value("DocType", "name", "fieldname")` (Positional args positional list index without dict/kwargs).
-- **Old JS Syntax:** `cur_frm`, `cur_dialog`, direct DOM manipulation with jQuery selectors.
-- **Old API Call:** Unsanitized raw SQL queries using direct string interpolation `frappe.db.sql(f"SELECT * FROM tabDoc WHERE name='{val}'")`.
-- **Deprecated Hooks:** Old hook names from v12/v13/v14.
+### ❌ STRICTLY FORBIDDEN (OLD / LEGACY VERSION CODE - DO NOT WRITE):
+- 🛑 **NO Version 15 (v15) Syntax or APIs:** Do NOT write v15 or older code patterns.
+- 🛑 **NO Deprecated DB Calls:** Do NOT write raw unparameterized SQL queries or old positional `frappe.db.get_value` calls without keyword arguments.
+- 🛑 **NO Legacy JS Syntax:** Do NOT use `cur_frm`, `cur_dialog`, global `$` jQuery DOM mutations, or legacy Desk v12-v15 handlers.
+- 🛑 **NO Outdated Hooks:** Do NOT use deprecated hook event signatures from v15 or earlier.
 
-### ✅ গ্রহণীয় (ALWAYS USE - Latest Version v16+ Standard):
-- **Python Query Builder (`frappe.qb` PyPika):** ডাটাবেজ কোয়েরির জন্য সবসময় Query Builder ব্যবহার করুন।
-- **Typed & Keyword Arguments:** Python ORM মেথডে স্পষ্ট কি-ওয়ার্ড আর্গুমেন্টস এবং টাইপ অ্যানোটেশন।
-- **Modern Form Controllers:** Form lifecycle event handling standards.
-- **Strict Permission & Whitelisting:** `@frappe.whitelist(allow_guest=False)` সহ কঠোর সিকিউরিটি চেকিং।
+### ✅ MANDATORY (VERSION 16+ STANDARDS ONLY):
+- ✨ **Python Query Builder (`frappe.qb`):** Always write database queries using PyPika Query Builder (`frappe.qb.from_`).
+- ✨ **Strict Type Annotations:** Backend functions must include explicit Python type hints (e.g. `customer_name: str -> list[dict]`).
+- ✨ **Modern Desk & Dialog APIs:** Use `frappe.ui.Dialog`, `frm.add_custom_button`, and fluid responsive components.
+- ✨ **Security & Whitelisting:** Mandatory `@frappe.whitelist()` with permission validations.
 
 ---
 
-## 3. আধুনিক কোড উদাহরণ (Modern Code Reference Examples)
+## 3. Version 16 Reference Implementations
 
-### ৩.১ Modern Python Backend Code (v16 Standard)
+### 3.1 Modern Python Backend (v16 Standard)
 ```python
 import frappe
 from frappe.model.document import Document
 from frappe.query_builder import DocType
 
-class CustomCustomerRequirement(Document):
+class CustomV16Feature(Document):
     def validate(self):
-        """সর্বশেষ ভার্সন অনুযায়ী ডকুমেন্ট ভ্যালিডেশন"""
-        self.calculate_totals()
+        """v16 Document validation lifecycle"""
+        self.recalculate_totals()
     
-    def calculate_totals(self):
+    def recalculate_totals(self):
         total = 0.0
-        for item in self.items:
-            item.amount = item.qty * item.rate
-            total += item.amount
-        self.total_amount = total
+        for row in self.items:
+            row.amount = row.qty * row.rate
+            total += row.amount
+        self.grand_total = total
 
 @frappe.whitelist()
-def get_latest_sales_orders(customer_name: str) -> list[dict]:
-    """frappe.qb (Query Builder) ব্যবহার করে আধুনিক ও নিরাপদ কোয়েরি"""
-    if not customer_name:
-        frappe.throw(frappe._("কাস্টমারের নাম প্রদান করা বাধ্যতামূলক।"))
+def fetch_v16_sales_data(customer_code: str) -> list[dict]:
+    """Modern v16 Query Builder API implementation"""
+    if not customer_code:
+        frappe.throw(frappe._("Customer Code is required."))
     
     SalesOrder = DocType("Sales Order")
     
     query = (
         frappe.qb.from_(SalesOrder)
         .select(SalesOrder.name, SalesOrder.transaction_date, SalesOrder.grand_total, SalesOrder.status)
-        .where(SalesOrder.customer == customer_name)
+        .where(SalesOrder.customer == customer_code)
         .where(SalesOrder.docstatus == 1)
         .orderby(SalesOrder.transaction_date, order=frappe.qb.desc)
         .limit(10)
@@ -100,43 +86,41 @@ def get_latest_sales_orders(customer_name: str) -> list[dict]:
     return query.run(as_dict=True)
 ```
 
-### ৩.২ Modern JavaScript Frontend Code (v16 Standard)
+### 3.2 Modern JavaScript Frontend (v16 Standard)
 ```javascript
 frappe.ui.form.on('Sales Order', {
     refresh(frm) {
-        // আধুনিক বোতাম যোগ করার নিয়ম
         if (frm.doc.docstatus === 1) {
-            frm.add_custom_button(__('কাস্টম অ্যাকশন সূচি'), () => {
-                frm.events.trigger_custom_dialog(frm);
-            }, __('কার্যাবলী'));
+            frm.add_custom_button(__('v16 Quick Action'), () => {
+                frm.events.show_v16_dialog(frm);
+            }, __('Actions'));
         }
     },
 
-    trigger_custom_dialog(frm) {
-        // আধুনিক Frappe Dialog API
+    show_v16_dialog(frm) {
         const dialog = new frappe.ui.Dialog({
-            title: __('অতিরিক্ত তথ্য যোগ করুন'),
+            title: __('Version 16 Action Panel'),
             fields: [
                 {
-                    label: __('মন্তব্য (Notes)'),
-                    fieldname: 'notes',
+                    label: __('Remarks'),
+                    fieldname: 'remarks',
                     fieldtype: 'Small Text',
                     reqd: 1
                 }
             ],
-            primary_action_label: __('সংরক্ষণ করুন'),
+            primary_action_label: __('Submit'),
             primary_action(values) {
                 frappe.call({
-                    method: 'your_app.api.save_notes',
+                    method: 'custom_app.api.process_v16_remarks',
                     args: {
-                        sales_order: frm.doc.name,
-                        notes: values.notes
+                        docname: frm.doc.name,
+                        remarks: values.remarks
                     },
                     freeze: true,
-                    freeze_message: __('সংরক্ষণ করা হচ্ছে...'),
+                    freeze_message: __('Processing in v16 Engine...'),
                     callback(r) {
                         if (!r.exc) {
-                            frappe.msgprint(__('সফলভাবে নিবন্ধিত হয়েছে!'));
+                            frappe.msgprint(__('Operation completed successfully!'));
                             dialog.hide();
                             frm.reload_doc();
                         }
@@ -149,43 +133,14 @@ frappe.ui.form.on('Sales Order', {
 });
 ```
 
-### ৩.৩ Modern `hooks.py` Definition
-```python
-app_name = "custom_erp_extension"
-app_title = "Custom ERP Extension"
-app_publisher = "IroScript"
-app_description = "Frappe Framework & ERPNext Latest Version Customizations"
-app_email = "md.kamruzzamanirak@gmail.com"
-app_license = "mit"
-
-# Modern Document Events
-doc_events = {
-    "Sales Invoice": {
-        "on_submit": "custom_erp_extension.api.on_sales_invoice_submit",
-        "on_cancel": "custom_erp_extension.api.on_sales_invoice_cancel"
-    }
-}
-
-# Modern Scheduler Events
-scheduler_events = {
-    "daily": [
-        "custom_erp_extension.tasks.daily_cleanup"
-    ]
-}
-```
-
 ---
 
-## 4. গিট ও পুশ ভ্যালিডেশন নিয়মাবলী (Git & Cloud Verification Rules)
+## 4. Mandatory User Git Rules & Workflow Controls
 
-1. **ইউজারের নির্দেশ ছাড়া পুশ নয়:** ইউজার থেকে সরাসরি `'git push'` কমান্ড না পাওয়া পর্যন্ত নিজে থেকে কখনই Git push দেওয়া যাবে না।
-2. **পুরানো কমিট ইতিহাস সংরক্ষণ:** কোনো পুরাতন commit ডিলিট বা ওভাররাইট করা সম্পূর্ণ নিষিদ্ধ (`git reset --hard` বা `git push --force` বর্জনীয়)।
-3. **২০০% গিটহাব ক্লাউড ভ্যালিডেশন:**
+1. **NO UNPROMPTED GIT PUSH:** The AI assistant must **NEVER** execute `git push` on its own. The decision to push belongs solely to the user when they command `'git push'`.
+2. **PRESERVE COMMIT HISTORY:** Never delete old commit messages or rewrite git history (`git reset --hard` or `git push --force` are strictly forbidden).
+3. **200% CLOUD VERIFICATION:**
    ```powershell
    git ls-remote origin main; git log --oneline -1
-   # যদি দুটি Commit Hash হুবহু মিলে যায় তবে কোড ২০০% ক্লাউডে নিশ্চিত রয়েছে।
+   # If remote hash matches local HEAD hash, push is 200% confirmed in cloud.
    ```
-
----
-
-> **নোট:** এই `gemini.md` ফাইলটি প্রজেক্টের মাস্টার গাইডলাইন হিসেবে সংরক্ষিত। ডেভেলপমেন্টের প্রতিটি ধাপে এই গাইডলাইন মেনে চলতে হবে।
