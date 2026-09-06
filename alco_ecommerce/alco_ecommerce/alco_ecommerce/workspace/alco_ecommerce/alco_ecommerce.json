@@ -1,0 +1,132 @@
+{
+ "app": "alco_ecommerce",
+ "charts": [],
+ "content": "[{\"id\":\"alco_hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Alco Field Force &amp; E-Commerce</b></span>\",\"col\":12}},{\"id\":\"sc_order\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Alco Field Order\",\"col\":4}},{\"id\":\"sc_item\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item\",\"col\":4}},{\"id\":\"sc_cust\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":4}},{\"id\":\"sp_1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"card_orders\",\"type\":\"card\",\"data\":{\"card_name\":\"Field Force Orders\",\"col\":6}},{\"id\":\"card_portal\",\"type\":\"card\",\"data\":{\"card_name\":\"Web Portal &amp; Links\",\"col\":6}}]",
+ "creation": "2026-08-23 12:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "shopping-bag",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Alco Ecommerce",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Field Force Orders",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Alco Field Order",
+   "link_count": 0,
+   "link_to": "Alco Field Order",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "ERPNext Sales Order",
+   "link_count": 0,
+   "link_to": "Sales Order",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Web Portal & Links",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Order Portal (/alco-order)",
+   "link_count": 0,
+   "link_to": "/alco-order",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-08-23 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Alco Ecommerce",
+ "name": "Alco Ecommerce",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "format": "{}",
+   "icon": "shopping-bag",
+   "label": "Alco Field Order",
+   "link_to": "Alco Field Order",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "format": "{}",
+   "icon": "box",
+   "label": "Item",
+   "link_to": "Item",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "format": "{}",
+   "icon": "users",
+   "label": "Customer",
+   "link_to": "Customer",
+   "type": "DocType"
+  }
+ ],
+ "sidebar_items": [],
+ "standard": 1,
+ "title": "Alco Ecommerce"
+}

@@ -1,0 +1,199 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-08-12 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "field_agent_name",
+  "chemist_doctor_name",
+  "phone_number",
+  "territory_region",
+  "zone",
+  "mpo_code",
+  "column_break_1",
+  "order_date",
+  "payment_method",
+  "status",
+  "erpnext_sales_order",
+  "section_break_items",
+  "items",
+  "section_break_totals",
+  "grand_total",
+  "vat_amount",
+  "due_amount",
+  "column_break_2",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "default": "ALO-ORD-.YYYY.-.#####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "ALO-ORD-.YYYY.-.#####"
+  },
+  {
+   "fieldname": "field_agent_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Field Agent Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "chemist_doctor_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Chemist / Doctor Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Contact Phone / Mobile"
+  },
+  {
+   "default": "Dhaka North",
+   "fieldname": "territory_region",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Territory / Region",
+   "options": "Dhaka North\nDhaka South\nChittagong South\nSylhet Central\nRajshahi West\nKhulna Region"
+  },
+  {
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Zone"
+  },
+  {
+   "fieldname": "mpo_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "MPO Code"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "order_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Order Date",
+   "reqd": 1
+  },
+  {
+   "default": "Cash",
+   "fieldname": "payment_method",
+   "fieldtype": "Select",
+   "label": "Payment Method",
+   "options": "Cash\nCredit\nBank Transfer\nbKash / Nagad"
+  },
+  {
+   "default": "Submitted",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Draft\nSubmitted\nProceeded\nInvoiced\nCancelled"
+  },
+  {
+   "fieldname": "erpnext_sales_order",
+   "fieldtype": "Link",
+   "label": "ERPNext Sales Order",
+   "options": "Sales Order",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_items",
+   "fieldtype": "Section Break",
+   "label": "Ordered Products & Batches"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Alco Field Order Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_totals",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Grand Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vat_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "VAT Amount"
+  },
+  {
+   "fieldname": "due_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Due Amount"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks / Delivery Instructions"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-08-12 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Alco Ecommerce",
+ "name": "Alco Field Order",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

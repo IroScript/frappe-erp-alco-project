@@ -1,0 +1,9 @@
+<svg width="118" height="118" viewBox="0 0 118 118" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="118" height="118" rx="24" fill="#059669"/>
+  <!-- Bag Handle -->
+  <path d="M42 42C42 32.6112 49.6112 25 59 25C68.3888 25 76 32.6112 76 42" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <!-- Bag Body -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M30 42C30 39.7909 31.7909 38 34 38H84C86.2091 38 88 39.7909 88 42L85.2 86.8C85.0872 88.6047 83.5937 90 81.7857 90H36.2143C34.4063 90 32.9128 88.6047 32.8 86.8L30 42Z" fill="white"/>
+  <!-- Inner Medical Cross -->
+  <path d="M59 55V73M50 64H68" stroke="#059669" stroke-width="6" stroke-linecap="round"/>
+</svg>

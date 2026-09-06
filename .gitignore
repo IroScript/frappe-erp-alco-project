@@ -9,6 +9,25 @@ venv/
 env/
 .venv/
 
-# Large cloned repos for local reference
-# frappe-framework-v16/
-# erpnext-v16/
+# Large cloned repos for local reference (v16 reference source)
+frappe-framework-v16/
+erpnext-v16/
+
+# OS and Desktop system files
+desktop.ini
+Thumbs.db
+.terminal_theme.json
+.agy_evidence/
+
+# Credentials & Sensitive Secrets (Strictly Excluded from Public Git)
+*credentials*.json
+*service_account*.json
+*client_secret*.json
+*.pickle
+.env
+.env.*
+.env.local
+!*.env.example
+credentials_master.json
+myCustomFolder/Alco-Ecommerce/credentials_master.json
+myCustomFolder/Logs/
