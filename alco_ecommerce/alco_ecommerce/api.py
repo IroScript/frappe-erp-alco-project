@@ -3,6 +3,7 @@ import frappe
 from frappe import _
 from frappe.query_builder import DocType
 import frappe.query_builder.functions as fn
+from alco_ecommerce.dynamic_gradient import extract_dynamic_gradient
 
 # -------------------------------------------------------------------------
 # 1. AUTHENTIC ALCO PHARMA PRODUCT MASTER CATALOG
@@ -218,8 +219,26 @@ ALCO_DEPOTS = [
 
 @frappe.whitelist(allow_guest=True)
 def get_pharma_products() -> list[dict]:
-    """Fetch available Alco Pharma product catalog for storefront and admin"""
+    """Fetch available Alco Pharma product catalog with dynamic color gradients extracted from packaging images"""
+    for p in ALCO_CATALOG:
+        img_url = p.get("image_url")
+        if img_url:
+            grad, prim, sec, breakdown = extract_dynamic_gradient(img_url)
+            p["gradient"] = grad
+            p["theme_color"] = prim
+            p["color_breakdown"] = breakdown
     return ALCO_CATALOG
+
+@frappe.whitelist(allow_guest=True)
+def get_image_gradient(image_url: str) -> dict:
+    """Dynamically extracts dominant color breakdown and CSS gradient for any product image URL"""
+    grad, prim, sec, breakdown = extract_dynamic_gradient(image_url)
+    return {
+        "gradient": grad,
+        "primary_color": prim,
+        "secondary_color": sec,
+        "color_breakdown": breakdown
+    }
 
 @frappe.whitelist(allow_guest=True)
 def submit_field_order(

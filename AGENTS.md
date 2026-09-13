@@ -42,4 +42,14 @@
 
 ---
 
+## SECTION 3: FRONTEND UI/UX DIRECTIVES (MOBILE-FIRST MANDATE)
+
+> 📱 **MOBILE FIRST PRIORITY FOR FRONTEND (UI/UX) ONLY** 📱
+
+1. **MOBILE FIRST PRIORITY (FRONTEND ONLY):** ফ্রন্টএন্ডের UI/UX ডিজাইনে সর্বদা **Mobile is First Priority (মোবাইল ফার্স্ট)** বিবেচনা করতে হবে। সমস্ত লেআউট, প্রোডাক্ট কার্ড, টাচ ইন্টারঅ্যাকশন, ন্যাভিগেশন, টাইপোগ্রাফি এবং বাটন সবার আগে মোবাইল স্ক্রিনের জন্য সর্বোচ্চ অপ্টিমাইজড ও সুন্দর হতে হবে।
+2. **DESKTOP RESPONSIVENESS:** মোবাইল ফার্স্ট হলেও ডেস্কটপ স্ক্রিনের জন্যও সবকিছু শতভাগ সুন্দর, রেসপনসিভ ও নিখুঁতভাবে কাজ করবে (ডেস্কটপের জন্যও কাজ করবে অবশ্যই)।
+3. **PRODUCT CARD SINGLE COLUMN:** মোবাইল ডিভাইসে (স্মার্টফোন ও পোট্রেট ভিউ) প্রোডাক্ট কার্ড সর্বদা **Single Column (১টি কলাম)** বিশিষ্ট হবে, যেন প্রতি লাইনে একটি করে পূর্ণাঙ্গ কার্ড দৃশ্যমান থাকে এবং তথ্য ও বাটনসমূহ সহজেই পড়া ও ব্যবহার করা যায়।
+
+---
+
 > **Note to Agents:** This document is authoritative. Adhere to these instructions for all code generation in this project.

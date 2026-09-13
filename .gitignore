@@ -31,3 +31,6 @@ Thumbs.db
 credentials_master.json
 myCustomFolder/Alco-Ecommerce/credentials_master.json
 myCustomFolder/Logs/
+tunnel_url.txt
+*.log
+

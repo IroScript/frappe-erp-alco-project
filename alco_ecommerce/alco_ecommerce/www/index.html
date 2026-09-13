@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Alco Pharma LTD. - Official Online Pharmacy (alcopharma.store)</title>
@@ -148,141 +151,345 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 18px;
         }
-        @media (max-width: 1100px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1180px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+        @media (max-width: 900px) { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+        /* Mobile First Priority: Single Column Layout for all phones & mobile screens */
+        /* Mobile First Priority: Single Column Layout for all phones & mobile screens */
         @media (max-width: 768px) {
-            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .store-container { padding: 12px 8px; }
-            .search-input { width: 160px; }
+            .store-container { padding: 14px 12px; max-width: 520px; margin: 0 auto; }
+            .product-grid { grid-template-columns: 1fr; gap: 22px; }
+            .search-input { width: 100%; max-width: 200px; }
+            .product-card { border-radius: 14px; }
+            .product-banner-header { padding: 15px 18px; min-height: 90px; }
+            .prod-brand-name { font-size: 22px; }
+            .prod-generic-name { font-size: 14px; }
+            .prod-pack-size { font-size: 11px; padding: 3px 10px; }
+            .product-image-box { height: auto; aspect-ratio: 2 / 1; padding: 0; }
+            .product-card-footer { padding: 14px 16px; }
+            .price-box-mrp { font-size: 11px; }
+            .price-box-offer { font-size: 21px; }
+            .btn-add, .btn-buy { padding: 11px 18px; font-size: 13px; border-radius: 8px; }
         }
         @media (max-width: 480px) {
-            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .store-container { padding: 10px 8px; }
+            .product-grid { grid-template-columns: 1fr; gap: 18px; }
             .main-header { padding: 10px 12px; }
+            .product-banner-header { padding: 14px 16px; min-height: 86px; }
+            .prod-brand-name { font-size: 20px; }
+            .product-image-box { height: auto; aspect-ratio: 2 / 1; padding: 0; }
+            .btn-add, .btn-buy { padding: 10px 14px; font-size: 12px; }
         }
 
+        /* =================================================================
+           YEAR 50,000 QUANTUM BIO-CARD (MOBILE FIRST OPTIMIZED)
+           ================================================================= */
         .product-card {
             background: #ffffff;
-            border-radius: 10px;
+            border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
             position: relative;
-            border: 1px solid #e2e8f0;
-        }
-        .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-bottom: 2.5px solid var(--card-accent, #0284c7);
+            box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.08), 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
         }
 
+        /* 1. QUANTUM LASER EMITTER (Top Active Beam) */
+        .product-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3.5px;
+            background: var(--card-accent, #0284c7);
+            box-shadow: 0 0 14px var(--card-accent, #0284c7), 0 0 2px #ffffff;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Hover & Touch Active Card Elevation */
+        .product-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 24px 48px -8px rgba(15, 23, 42, 0.16), 0 0 0 1px var(--card-accent, #0284c7), 0 8px 30px -4px var(--card-glow, rgba(2, 132, 199, 0.35));
+        }
+
+        /* 2. DYNAMIC PACKAGING GRADIENT HEADER (Year 50,000 Holographic HUD) */
         .product-banner-header {
-            padding: 14px 12px;
+            padding: 16px 18px 14px;
             color: #ffffff;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            height: 115px;
+            justify-content: center;
+            gap: 4px;
+            min-height: 104px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.20);
         }
-        .banner-tag {
-            font-size: 10px;
-            font-weight: 800;
-            background: rgba(0,0,0,0.3);
-            padding: 3px 8px;
-            border-radius: 10px;
-            width: fit-content;
+        /* Holographic Light Refraction Beam */
+        .product-banner-header::before {
+            content: "";
+            position: absolute;
+            top: -50%; left: -30%; width: 160%; height: 200%;
+            background: radial-gradient(ellipse at 80% 20%, rgba(255, 255, 255, 0.26) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 1;
         }
-        .banner-name {
-            font-size: 20px;
-            font-weight: 900;
-            line-height: 1.1;
-        }
-        .banner-sub {
-            font-size: 10px;
-            opacity: 0.9;
+        /* Cyber Micro-Grid Matrix */
+        .product-banner-header::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+            background-size: 12px 12px;
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .product-image-box {
-            height: 120px;
-            background: #f8fafc;
+        /* Telemetry Cyber Line */
+        .prod-telemetry-badge {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 10px;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 800;
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 2px;
+            position: relative;
+            z-index: 2;
+        }
+        .telemetry-live {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #a7f3d0;
+            font-size: 8.5px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Brand Name */
+        .prod-brand-name {
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -0.4px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Generic Name */
+        .prod-generic-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.94);
+            line-height: 1.25;
+            letter-spacing: 0.15px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Pack Size Holographic Capsule */
+        .prod-pack-size {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            padding: 3px 11px;
+            border-radius: 6px;
+            width: fit-content;
+            margin-top: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            position: relative;
+            z-index: 2;
+            font-family: ui-monospace, SFMono-Regular, monospace;
+        }
+
+        /* 3. PACKAGING DISPLAY CHAMBER (ZERO BLANK SPACE + ONE-LINE HOLO BEAM) */
+        .product-image-box {
+            width: 100%;
+            aspect-ratio: 2 / 1;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+            background: #ffffff;
+            display: block;
             border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         .product-image-box img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            margin: 0;
+            padding: 0;
+            border: none;
+            pointer-events: none;
+            transition: filter 0.3s ease;
         }
 
-        .product-details {
-            padding: 12px;
-            flex: 1;
-        }
-        .prod-title {
-            font-size: 15px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-        .prod-generic {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 600;
-        }
-        .prod-size {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 2px;
+        /* ONE-LINE HOLOGRAPHIC LIGHT BEAM (CRISP 12PX SINGLE LASER LINE, ZERO FOG/SMOKE) */
+        .product-image-box::after {
+            content: "";
+            position: absolute;
+            top: -75%;
+            left: -35%;
+            width: 12px;
+            height: 250%;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.75) 28%,
+                #ffffff 50%,
+                rgba(255, 255, 255, 0.75) 72%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            box-shadow: 
+                0 0 8px 2px rgba(255, 255, 255, 0.95),
+                0 0 18px 4px var(--card-glow, rgba(0, 105, 178, 0.45));
+            transform: rotate(25deg);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 3;
         }
 
+        @keyframes holoSingleLine {
+            0% {
+                left: -35%;
+                opacity: 0;
+            }
+            8% {
+                opacity: 1;
+            }
+            92% {
+                opacity: 1;
+            }
+            100% {
+                left: 135%;
+                opacity: 0;
+            }
+        }
+
+        .product-image-box.holo-sweep::after,
+        .product-image-box:hover::after,
+        .product-image-box:active::after {
+            animation: holoSingleLine 1.8s ease-in-out forwards;
+        }
+
+        .product-card.holo-active {
+            box-shadow: 0 0 20px var(--card-accent, #0284c7), 0 12px 32px rgba(15, 23, 42, 0.16) !important;
+            border-color: var(--card-accent, #0284c7) !important;
+            transition: all 0.3s ease;
+        }
+
+        /* 4. QUANTUM TRANSACTION FOOTER */
         .product-card-footer {
-            padding: 10px 12px 14px;
+            padding: 14px 18px;
             border-top: 1px solid #f1f5f9;
-            background: #fafafa;
+            background: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
+        }
+        .price-section {
+            display: flex;
+            flex-direction: column;
         }
         .price-box-mrp {
-            font-size: 10px;
-            color: #dc2626;
+            font-size: 11px;
+            color: #94a3b8;
             text-decoration: line-through;
             font-weight: 600;
+            font-family: ui-monospace, SFMono-Regular, monospace;
         }
         .price-box-offer {
-            font-size: 14px;
+            font-size: 21px;
             font-weight: 900;
-            color: #ea580c;
+            color: #0f172a;
+            letter-spacing: -0.4px;
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+        }
+        .cyber-glyph {
+            color: var(--card-accent, #0284c7);
+            font-size: 14px;
+            margin-right: 3px;
         }
 
+        /* Action Buttons (Obsidian Titanium & Ruby Plasma) */
         .action-btns {
             display: flex;
-            gap: 6px;
+            gap: 7px;
         }
         .btn-add {
-            background: #0069b2;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 10px;
-            font-size: 11px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 9px;
+            padding: 9px 14px;
+            font-size: 12px;
             font-weight: 800;
+            letter-spacing: 0.4px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-add:hover { background: #005590; }
+        .btn-add:hover {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.22);
+        }
+        .btn-add:active {
+            transform: scale(0.95);
+            background: #0f172a;
+        }
         .btn-buy {
-            background: #e11d48;
-            color: #fff;
+            background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+            color: #ffffff;
             border: none;
-            border-radius: 4px;
-            padding: 6px 10px;
-            font-size: 11px;
-            font-weight: 800;
+            border-radius: 9px;
+            padding: 9px 16px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-buy:hover { background: #be123c; }
+        .btn-buy:hover {
+            background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(225, 29, 72, 0.50);
+        }
+        .btn-buy:active {
+            transform: scale(0.95);
+            background: #be123c;
+        }
 
         /* 5. CART DRAWER */
         .cart-drawer-backdrop {
@@ -448,7 +655,195 @@
     <!-- 4. PRODUCT GRID -->
     <main class="store-container">
         <div class="product-grid" id="storeProductGrid">
-            <!-- Dynamic Products -->
+            <div class="product-card" style="--card-accent: #476091; --card-glow: #47609140;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #0c285f 0%, #1f54bd 55%, #7f47e1 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Pantopra 40</div>
+                    <div class="prod-generic-name">Pantoprazole</div>
+                    <div class="prod-pack-size">40 mg Tablet [42's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/uqJjlcNxfkmiOcQK5A0L39JygwCkbpyUkm7yivrr.jpeg" alt="Pantopra 40" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳273.00</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳180.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-PAN-40')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-PAN-40')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #2f9a40; --card-glow: #2f9a4040;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #0c5f19 0%, #1fbd38 55%, #68d97a 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Calmi 500</div>
+                    <div class="prod-generic-name">Calcium Carbonate</div>
+                    <div class="prod-pack-size">500 mg Tablet [50's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/83vA5xIrdiRwPufrRvEXS6ghYyiVMlDmyHmKZiuM.jpeg" alt="Calmi 500" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳200.50</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳80.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-CAL-500')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-CAL-500')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #a13a84; --card-glow: #a13a8440;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #5f0c48 0%, #bd1f90 55%, #e19947 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Xcite 50</div>
+                    <div class="prod-generic-name">Sildenafil</div>
+                    <div class="prod-pack-size">50 mg Tablet [4's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/227ogpmme5V87vWy6sFzsk1HnBJ4ks2GJMVqWb0K.jpeg" alt="Xcite 50" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳120.36</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳20.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-XCT-50')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-XCT-50')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #77bbe0; --card-glow: #77bbe040;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #0c425f 0%, #1f85bd 55%, #f6323a 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">P+C</div>
+                    <div class="prod-generic-name">Paracetamol + Caffeine</div>
+                    <div class="prod-pack-size">500 mg + 65 mg Tablet [100's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/EfKV3usPAJ8vd1VviqBKT84DgwkxlRYex1QDp8MO.jpeg" alt="P+C" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳250.00</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳200.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-PNC-500')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-PNC-500')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #923f85; --card-glow: #923f8540;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #5f0c52 0%, #bd1fa4 55%, #40b7e7 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Levocet 5</div>
+                    <div class="prod-generic-name">Levocetirizine Dihydrochloride</div>
+                    <div class="prod-pack-size">5 mg Tablet [50's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/jghGOVzzhKjaD3EtOXeqFLsYwOXpu39x6lpcDsw1.jpeg" alt="Levocet 5" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳100.50</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳70.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-LEV-5')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-LEV-5')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #a0352e; --card-glow: #a0352e40;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #5f110c 0%, #bd281f 55%, #e18247 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Noler 10</div>
+                    <div class="prod-generic-name">Cetirizine Dihydrochloride</div>
+                    <div class="prod-pack-size">10 mg Tablet [50's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/jvTcoIwaFHSCUNiy3EWLJ5HHcTbMy7NTjFlCdlCk.jpeg" alt="Noler 10" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳125.50</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳100.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-NOL-10')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-NOL-10')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #4bae65; --card-glow: #4bae6540;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #0c5f22 0%, #1fbd48 55%, #e16347 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Viev 20</div>
+                    <div class="prod-generic-name">Tadalafil</div>
+                    <div class="prod-pack-size">20 mg Tablet [4's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/kc4gR61N6JWhqLc7gYj4GjefVEfM3HRyM21RbLw8.jpeg" alt="Viev 20" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳240.72</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳100.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-VIE-20')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-VIE-20')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #e55542; --card-glow: #e5554240;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #641207 0%, #c92812 55%, #e17947 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Viev 10</div>
+                    <div class="prod-generic-name">Tadalafil</div>
+                    <div class="prod-pack-size">10 mg Tablet [4's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/1qWQPiqn1LghKcMoCykUAzD7XZ8zKTIXcnxHPGhf.jpeg" alt="Viev 10" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳140.44</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳63.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-VIE-10')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-VIE-10')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" style="--card-accent: #a13a84; --card-glow: #a13a8440;">
+                <div class="product-banner-header" style="background: linear-gradient(135deg, #5f0c48 0%, #bd1f90 55%, #e19947 100%);">
+                    <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                    <div class="prod-brand-name">Xcite 100</div>
+                    <div class="prod-generic-name">Sildenafil</div>
+                    <div class="prod-pack-size">100 mg Tablet [4's]</div>
+                </div>
+                <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/227ogpmme5V87vWy6sFzsk1HnBJ4ks2GJMVqWb0K.jpeg" alt="Xcite 100" loading="lazy">
+                </div>
+                <div class="product-card-footer">
+                    <div class="price-section">
+                        <div class="price-box-mrp">MRP ৳200.59</div>
+                        <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳150.00</div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-add" onclick="addToCart('ALO-XCT-100')">🛒 ADD +</button>
+                        <button class="btn-buy" onclick="buyNow('ALO-XCT-100')">BUY ▶</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -535,16 +930,211 @@
         </div>
     </div>
 
-    <script>
-        let storeProducts = [];
+<script>
+        let storeProducts = [
+        {
+                "item_code": "ALO-PAN-40",
+                "item_name": "Pantopra 40",
+                "generic_name": "Pantoprazole",
+                "category": "General Item",
+                "pack_size": "40 mg Tablet [42's]",
+                "mrp": 273.0,
+                "offer_price": 180.0,
+                "rate": 180.0,
+                "cost": 150.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 74520,
+                "upc": "8027811",
+                "unit": "40 mg Tablet [42's]",
+                "theme_color": "#476091",
+                "gradient": "linear-gradient(135deg, #0c285f 0%, #1f54bd 55%, #7f47e1 100%)",
+                "banner_tag": "\u0997\u09cd\u09af\u09be\u09b8\u09cd\u099f\u09cd\u09b0\u09bf\u0995 \u0993 \u09ac\u09c1\u0995 \u099c\u09cd\u09ac\u09be\u09b2\u09be\u09aa\u09cb\u09dc\u09be\u09df \u09a6\u09cd\u09b0\u09c1\u09a4 \u0995\u09be\u09b0\u09cd\u09af\u0995\u09b0",
+                "banner_sub": "Pantoprazole Sodium Sesquihydrate USP 40 mg",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/uqJjlcNxfkmiOcQK5A0L39JygwCkbpyUkm7yivrr.jpeg",
+                "description": "Each enteric coated tablet contains Pantoprazole Sodium Sesquihydrate USP equivalent to Pantoprazole 40 mg."
+        },
+        {
+                "item_code": "ALO-CAL-500",
+                "item_name": "Calmi 500",
+                "generic_name": "Calcium Carbonate",
+                "category": "General Item",
+                "pack_size": "500 mg Tablet [50's]",
+                "mrp": 200.5,
+                "offer_price": 80.0,
+                "rate": 80.0,
+                "cost": 65.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 81943,
+                "upc": "4768425",
+                "unit": "500 mg Tablet [50's]",
+                "theme_color": "#2f9a40",
+                "gradient": "linear-gradient(135deg, #0c5f19 0%, #1fbd38 55%, #68d97a 100%)",
+                "banner_tag": "\u09ac\u09df\u09b8\u099c\u09a8\u09bf\u09a4 \u0995\u09cd\u09af\u09be\u09b2\u09b8\u09bf\u09df\u09be\u09ae\u09c7\u09b0 \u0998\u09be\u099f\u09a4\u09bf \u09aa\u09c2\u09b0\u09a3\u09c7",
+                "banner_sub": "\u09a6\u09be\u0981\u09a4 \u0993 \u09b9\u09be\u09dc \u0997\u09a0\u09a8\u09c7 \u09b8\u09b9\u09be\u09df\u09a4\u09be \u0995\u09b0\u09c7\n\u09aa\u09b0\u09cd\u09af\u09be\u09aa\u09cd\u09a4 \u0995\u09cd\u09af\u09be\u09b2\u09b8\u09bf\u09df\u09be\u09ae\u09c7\u09b0 \u099a\u09be\u09b9\u09bf\u09a6\u09be \u09aa\u09c2\u09b0\u09a3 \u0995\u09b0\u09c7",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/83vA5xIrdiRwPufrRvEXS6ghYyiVMlDmyHmKZiuM.jpeg",
+                "description": "Each film coated tablet contains Calcium Carbonate USP 1250 mg equivalent to elemental Calcium 500 mg."
+        },
+        {
+                "item_code": "ALO-XCT-50",
+                "item_name": "Xcite 50",
+                "generic_name": "Sildenafil",
+                "category": "General Item",
+                "pack_size": "50 mg Tablet [4's]",
+                "mrp": 120.36,
+                "offer_price": 20.0,
+                "rate": 20.0,
+                "cost": 15.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 83339,
+                "upc": "7986238",
+                "unit": "50 mg Tablet [4's]",
+                "theme_color": "#a13a84",
+                "gradient": "linear-gradient(135deg, #5f0c48 0%, #bd1f90 55%, #e19947 100%)",
+                "banner_tag": "\u09af\u0996\u09a8\u0987 \u09aa\u09cd\u09b0\u09df\u09cb\u099c\u09a8 \u09a4\u0996\u09a8\u0987",
+                "banner_sub": "Sildenafil Citrate 50 mg",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/227ogpmme5V87vWy6sFzsk1HnBJ4ks2GJMVqWb0K.jpeg",
+                "description": "Each film coated tablet contains Sildenafil citrate INN equivalent to Sildenafil 50 mg."
+        },
+        {
+                "item_code": "ALO-PNC-500",
+                "item_name": "P+C",
+                "generic_name": "Paracetamol + Caffeine",
+                "category": "Featured",
+                "pack_size": "500 mg + 65 mg Tablet [100's]",
+                "mrp": 250.0,
+                "offer_price": 200.0,
+                "rate": 200.0,
+                "cost": 170.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 88347,
+                "upc": "2574345",
+                "unit": "500 mg + 65 mg Tablet [100's]",
+                "theme_color": "#77bbe0",
+                "gradient": "linear-gradient(135deg, #0c425f 0%, #1f85bd 55%, #f6323a 100%)",
+                "banner_tag": "\u099c\u09cd\u09ac\u09b0 \u0995\u09bf\u0982\u09ac\u09be \u09ac\u09cd\u09af\u09a5\u09be? \u09b8\u09ae\u09be\u09a7\u09be\u09a8 P+C \u09a4\u09c7\u0987",
+                "banner_sub": "\u099c\u09cd\u09ac\u09b0 \u0995\u09bf\u0982\u09ac\u09be \u09ae\u09c3\u09a6\u09c1 \u09ac\u09cd\u09af\u09a5\u09be\u0995\u09c7 \u09ac\u09bf\u09a6\u09be\u09df \u099c\u09be\u09a8\u09bf\u09df\u09c7, \u09b8\u09c1\u09b8\u09cd\u09a5\u09a4\u09be\u09b0 \u0985\u09a8\u09c1\u09ad\u09c2\u09a4\u09bf \u09a6\u09c7\u09df\u0964",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/EfKV3usPAJ8vd1VviqBKT84DgwkxlRYex1QDp8MO.jpeg",
+                "description": "Each Tablet contains Paracetamol BP 500 mg & Caffeine USP 65 mg. Fast relief from fever & pain."
+        },
+        {
+                "item_code": "ALO-LEV-5",
+                "item_name": "Levocet 5",
+                "generic_name": "Levocetirizine Dihydrochloride",
+                "category": "General Item",
+                "pack_size": "5 mg Tablet [50's]",
+                "mrp": 100.5,
+                "offer_price": 70.0,
+                "rate": 70.0,
+                "cost": 55.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 70743,
+                "upc": "4535261",
+                "unit": "5 mg Tablet [50's]",
+                "theme_color": "#923f85",
+                "gradient": "linear-gradient(135deg, #5f0c52 0%, #bd1fa4 55%, #40b7e7 100%)",
+                "banner_tag": "\u09e8\u09ea \u0998\u09a3\u09cd\u099f\u09be \u098f\u09b2\u09be\u09b0\u09cd\u099c\u09bf \u09ae\u09c1\u0995\u09cd\u09a4 \u09b0\u09be\u0996\u09a4\u09c7",
+                "banner_sub": "Levocetirizine Dihydrochloride 5 mg",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/jghGOVzzhKjaD3EtOXeqFLsYwOXpu39x6lpcDsw1.jpeg",
+                "description": "Each film coated tablet contains Levocetirizine Dihydrochloride INN 5 mg."
+        },
+        {
+                "item_code": "ALO-NOL-10",
+                "item_name": "Noler 10",
+                "generic_name": "Cetirizine Dihydrochloride",
+                "category": "General Item",
+                "pack_size": "10 mg Tablet [50's]",
+                "mrp": 125.5,
+                "offer_price": 100.0,
+                "rate": 100.0,
+                "cost": 80.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 89459,
+                "upc": "7705451",
+                "unit": "10 mg Tablet [50's]",
+                "theme_color": "#a0352e",
+                "gradient": "linear-gradient(135deg, #5f110c 0%, #bd281f 55%, #e18247 100%)",
+                "banner_tag": "\u0985\u09cd\u09af\u09be\u09b2\u09be\u09b0\u09cd\u099c\u09bf? \u09a6\u09bf\u09a8\u09ad\u09b0 \u09b8\u09cd\u09ac\u09b8\u09cd\u09a4\u09bf \u09e7\u099f\u09bf \u099f\u09cd\u09af\u09be\u09ac\u09b2\u09c7\u099f\u09c7!",
+                "banner_sub": "Cetirizine Dihydrochloride BP 10 mg",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/jvTcoIwaFHSCUNiy3EWLJ5HHcTbMy7NTjFlCdlCk.jpeg",
+                "description": "Each film coated Tablet contains Cetirizine Dihydrochloride BP 10 mg."
+        },
+        {
+                "item_code": "ALO-VIE-20",
+                "item_name": "Viev 20",
+                "generic_name": "Tadalafil",
+                "category": "Featured",
+                "pack_size": "20 mg Tablet [4's]",
+                "mrp": 240.72,
+                "offer_price": 100.0,
+                "rate": 100.0,
+                "cost": 85.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 62783,
+                "upc": "895796",
+                "unit": "20 mg Tablet [4's]",
+                "theme_color": "#4bae65",
+                "gradient": "linear-gradient(135deg, #0c5f22 0%, #1fbd48 55%, #e16347 100%)",
+                "banner_tag": "\u09a6\u09cd\u09b0\u09c1\u09a4 \u098f\u09ac\u0982 \u09a6\u09c0\u09b0\u09cd\u0998 \u09b8\u09ae\u09df \u0995\u09be\u099c \u0995\u09b0\u09c7",
+                "banner_sub": "Tadalafil USP 20 mg",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/kc4gR61N6JWhqLc7gYj4GjefVEfM3HRyM21RbLw8.jpeg",
+                "description": "Each film coated tablet contains Tadalafil USP 20 mg."
+        },
+        {
+                "item_code": "ALO-VIE-10",
+                "item_name": "Viev 10",
+                "generic_name": "Tadalafil",
+                "category": "General Item",
+                "pack_size": "10 mg Tablet [4's]",
+                "mrp": 140.44,
+                "offer_price": 63.0,
+                "rate": 63.0,
+                "cost": 50.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 49403,
+                "upc": "6520603",
+                "unit": "10 mg Tablet [4's]",
+                "theme_color": "#e55542",
+                "gradient": "linear-gradient(135deg, #641207 0%, #c92812 55%, #e17947 100%)",
+                "banner_tag": "\u09a6\u09cd\u09b0\u09c1\u09a4 \u098f\u09ac\u0982 \u09a6\u09c0\u09b0\u09cd\u0998 \u09b8\u09ae\u09df \u0995\u09be\u099c \u0995\u09b0\u09c7",
+                "banner_sub": "Tadalafil USP 10 mg",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/1qWQPiqn1LghKcMoCykUAzD7XZ8zKTIXcnxHPGhf.jpeg",
+                "description": "Each film coated tablet contains Tadalafil USP 10 mg."
+        },
+        {
+                "item_code": "ALO-XCT-100",
+                "item_name": "Xcite 100",
+                "generic_name": "Sildenafil",
+                "category": "Featured",
+                "pack_size": "100 mg Tablet [4's]",
+                "mrp": 200.59,
+                "offer_price": 150.0,
+                "rate": 150.0,
+                "cost": 120.0,
+                "vat_percentage": 15.0,
+                "stock_qty": 51294,
+                "upc": "3828519",
+                "unit": "100 mg Tablet [4's]",
+                "theme_color": "#a13a84",
+                "gradient": "linear-gradient(135deg, #5f0c48 0%, #bd1f90 55%, #e19947 100%)",
+                "banner_tag": "Xcite 100 Film Coated Tablet",
+                "banner_sub": "Each film coated tablet contains Sildenafil citrate INN equivalent to Sildenafil 100",
+                "image_url": "https://s3-ap-southeast-1.amazonaws.com/ipos-resources.bdshebaitsolutions.com/assets/76/item/227ogpmme5V87vWy6sFzsk1HnBJ4ks2GJMVqWb0K.jpeg",
+                "description": "Each film coated tablet contains Sildenafil citrate INN equivalent to Sildenafil 100."
+        }
+];
         let cart = [];
 
         function loadStorefront() {
             fetch('/api/method/alco_ecommerce.api.get_pharma_products')
             .then(r => r.json())
             .then(d => {
-                storeProducts = d.message || [];
-                renderStoreProducts(storeProducts);
+                if (d.message && d.message.length) {
+                    storeProducts = d.message;
+                    const container = document.getElementById('storeProductGrid');
+                    if (!container.children.length) {
+                        renderStoreProducts(storeProducts);
+                    }
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -557,24 +1147,23 @@
             list.forEach(p => {
                 const el = document.createElement('div');
                 el.className = 'product-card';
+                const accent = p.theme_color || '#0069b2';
+                el.style.setProperty('--card-accent', accent);
+                el.style.setProperty('--card-glow', `${accent}40`);
                 el.innerHTML = `
                     <div class="product-banner-header" style="background: ${p.gradient};">
-                        <span class="banner-tag">${p.banner_tag}</span>
-                        <div class="banner-name">${p.item_name}</div>
-                        <div class="banner-sub">${p.banner_sub}</div>
+                        <div class="prod-telemetry-badge"><span>◈ SEC-50K</span><span class="telemetry-live">STASIS ACTIVE</span></div>
+                        <div class="prod-brand-name">${p.item_name}</div>
+                        <div class="prod-generic-name">${p.generic_name}</div>
+                        <div class="prod-pack-size">${p.pack_size}</div>
                     </div>
-                    <div class="product-image-box">
-                        <img src="${p.image_url}" alt="${p.item_name}">
-                    </div>
-                    <div class="product-details">
-                        <div class="prod-title">${p.item_name}</div>
-                        <div class="prod-generic">${p.generic_name}</div>
-                        <div class="prod-size">${p.pack_size}</div>
+                    <div class="product-image-box" onclick="triggerHoloSweep(this, event)" onpointerdown="triggerHoloSweep(this, event)">
+                        <img src="${p.image_url}" alt="${p.item_name}" loading="lazy">
                     </div>
                     <div class="product-card-footer">
-                        <div>
+                        <div class="price-section">
                             <div class="price-box-mrp">MRP ৳${p.mrp.toFixed(2)}</div>
-                            <div class="price-box-offer">৳${p.offer_price.toFixed(2)}</div>
+                            <div class="price-box-offer"><span class="cyber-glyph">◈</span>৳${p.offer_price.toFixed(2)}</div>
                         </div>
                         <div class="action-btns">
                             <button class="btn-add" onclick="addToCart('${p.item_code}')">🛒 ADD +</button>
@@ -584,6 +1173,26 @@
                 `;
                 container.appendChild(el);
             });
+        }
+
+        function triggerHoloSweep(el, event) {
+            if (event) event.stopPropagation();
+            if (el._isSweeping) return;
+            el._isSweeping = true;
+
+            const card = el.closest('.product-card');
+            el.classList.remove('holo-sweep');
+            if (card) card.classList.remove('holo-active');
+            void el.offsetWidth; // Force layout recalculation
+
+            el.classList.add('holo-sweep');
+            if (card) card.classList.add('holo-active');
+
+            setTimeout(() => {
+                el.classList.remove('holo-sweep');
+                if (card) card.classList.remove('holo-active');
+                el._isSweeping = false;
+            }, 1850);
         }
 
         function filterStoreProducts() {
