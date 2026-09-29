@@ -1,36 +1,54 @@
-# Environment & Build artifacts
-*.pyc
+# Byte-compiled & cache artifacts
 __pycache__/
-*.log
-.DS_Store
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
 
-# Virtual environments
-venv/
+# Environments
+.env
+.env.*
 env/
+venv/
 .venv/
 
-# Large cloned repos for local reference (v16 reference source)
-frappe-framework-v16/
-erpnext-v16/
+# Database dumps, caches & test databases
+*.sql
+*.sql.gz
+*.tar
+*.tar.gz
+*.rdb
+*.db
+*.sqlite*
+orders_db.json
+gradient_cache.json
+customers_db.json
+data/
 
-# OS and Desktop system files
-desktop.ini
+# Logs & Runtime files
+*.log
+*.pid
+*.sock
+logs/
+
+# Frontend builds
+node_modules/
+package-lock.json
+
+# System & IDE files
+.DS_Store
 Thumbs.db
-.terminal_theme.json
-.agy_evidence/
+desktop.ini
+.vscode/
+.idea/
 
-# Credentials & Sensitive Secrets (Strictly Excluded from Public Git)
+# Secrets & Credentials
 *credentials*.json
 *service_account*.json
 *client_secret*.json
-*.pickle
-.env
-.env.*
-.env.local
-!*.env.example
-credentials_master.json
-myCustomFolder/Alco-Ecommerce/credentials_master.json
-myCustomFolder/Logs/
-tunnel_url.txt
-*.log
+*.key
+*.pem
 
+# Evidence and agent artifacts
+.agy_evidence/

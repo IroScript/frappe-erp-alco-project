@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Customer Order Book - Alco Pharma LTD.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            color: #000000;
+            padding: 20px;
+        }
+
+        .no-print-bar {
+            max-width: 800px;
+            margin: 0 auto 16px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .btn-print {
+            background: #0069b2;
+            color: #ffffff;
+            border: none;
+            padding: 8px 18px;
+            font-weight: bold;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-print:hover { background: #00528c; }
+        .btn-back {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .btn-back:hover { color: #0069b2; }
+
+        .invoice-sheet {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px 45px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            min-height: 1050px;
+            position: relative;
+        }
+
+        /* 1. TOP HEADER */
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .logo-box svg {
+            width: 24px;
+            height: 24px;
+            stroke: #000;
+        }
+        .logo-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+        }
+        .company-address {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #000;
+        }
+
+        .order-meta-box {
+            border: 1px solid #000;
+            padding: 8px 14px;
+            font-size: 13px;
+            line-height: 1.7;
+            min-width: 260px;
+        }
+        .order-meta-box .row {
+            display: flex;
+        }
+        .order-meta-box .lbl {
+            width: 95px;
+            color: #000;
+        }
+        .order-meta-box .val {
+            color: #000;
+        }
+
+        /* 2. MIDDLE INFO BOXES */
+        .middle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .market-box {
+            border: 1px solid #000;
+            padding: 8px 14px;
+            font-size: 13px;
+            line-height: 1.8;
+            width: 46%;
+        }
+        .market-box .row {
+            display: flex;
+        }
+        .market-box .lbl {
+            width: 75px;
+            color: #000;
+        }
+        .market-box .val {
+            color: #000;
+        }
+
+        .customer-info-box {
+            border: 1px solid #000;
+            font-size: 13px;
+            width: 48%;
+        }
+        .customer-info-box .box-title {
+            text-align: center;
+            font-weight: bold;
+            padding: 4px 0;
+            border-bottom: 1px solid #000;
+            font-size: 13px;
+        }
+        .customer-info-box .box-content {
+            padding: 8px 14px;
+            line-height: 1.8;
+        }
+        .customer-info-box .row {
+            display: flex;
+        }
+        .customer-info-box .lbl {
+            width: 125px;
+            color: #000;
+        }
+        .customer-info-box .val {
+            color: #000;
+        }
+
+        /* 3. DIVIDER & TITLE */
+        .section-divider {
+            border-top: 1px solid #000;
+            margin: 18px 0 12px 0;
+        }
+        .order-book-title {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            color: #000;
+            margin-bottom: 12px;
+        }
+
+        /* 4. ITEMS TABLE */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 24px;
+        }
+        .items-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: bold;
+            vertical-align: bottom;
+            padding: 8px 4px;
+            color: #000;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .items-table td {
+            padding: 10px 4px;
+            color: #000;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .items-table .col-sl { width: 4%; text-align: left; }
+        .items-table .col-prod { width: 22%; text-align: left; }
+        .items-table .col-pack { width: 22%; text-align: left; line-height: 1.3; }
+        .items-table .col-mrp { width: 10%; text-align: right; }
+        .items-table .col-offer { width: 11%; text-align: right; }
+        .items-table .col-qty { width: 9%; text-align: center; line-height: 1.3; }
+        .items-table .col-disc { width: 11%; text-align: right; line-height: 1.3; }
+        .items-table .col-payable { width: 11%; text-align: right; }
+
+        .items-table tfoot td {
+            font-weight: bold;
+            font-size: 12px;
+            padding: 14px 4px;
+            border-top: 1px solid #cbd5e1;
+            border-bottom: none;
+        }
+
+        /* 5. FOOTER SIGNATURES */
+        .signature-section {
+            margin-top: 140px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 13px;
+            color: #000;
+        }
+        .signature-block {
+            border-top: 1px solid #000;
+            width: 200px;
+            text-align: center;
+            padding-top: 6px;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+            }
+            .no-print-bar { display: none; }
+            .invoice-sheet {
+                border: none;
+                box-shadow: none;
+                padding: 20px 20px;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print-bar">
+        <div>
+            <a href="/alco-admin" class="btn-back">◀ Back to Admin Dashboard</a>
+        </div>
+        <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
+
+    <div class="invoice-sheet" id="invoiceSheet">
+        <!-- 1. TOP HEADER -->
+        <div class="top-row">
+            <div>
+                <div class="logo-box">
+                    <img src="/assets/alco_ecommerce/images/alco_logo_blue.png" alt="Alco Pharma Ltd." style="height:46px; width:auto; max-width:240px; display:block; margin-bottom:6px; object-fit:contain;">
+                </div>
+                <div class="company-address">
+                    <div>H: 21, R: 113/A</div>
+                    <div>Gulshan 2, Dhaka 1212</div>
+                    <div>Phone: 01955333555</div>
+                </div>
+            </div>
+
+            <div class="order-meta-box">
+                <div class="row"><span class="lbl">Order ID</span><span class="val">: <span id="metaOrderId">RNG16621</span></span></div>
+                <div class="row"><span class="lbl">Order Date</span><span class="val">: <span id="metaOrderDate">14/09/2026, 05:38 PM</span></span></div>
+            </div>
+        </div>
+
+        <!-- 2. MIDDLE ROW (Market & Customer) -->
+        <div class="middle-row">
+            <div class="market-box">
+                <div class="row"><span class="lbl">Market</span><span class="val">: <span id="metaMarket">DOMAR</span></span></div>
+                <div class="row"><span class="lbl">MPO</span><span class="val">: <span id="metaMpo">SHAMAL CHANDRA RAY</span></span></div>
+                <div class="row"><span class="lbl">DA</span><span class="val">: <span id="metaDa">A.H KAFI</span></span></div>
+            </div>
+
+            <div class="customer-info-box">
+                <div class="box-title">Customer Info</div>
+                <div class="box-content">
+                    <div class="row"><span class="lbl">Customer Name</span><span class="val">: <span id="metaCustName">Konika pharmacy</span></span></div>
+                    <div class="row"><span class="lbl">Phone Number</span><span class="val">: <span id="metaPhone">01774502999</span></span></div>
+                    <div class="row"><span class="lbl">Thana</span><span class="val">: <span id="metaThana">Domar</span></span></div>
+                    <div class="row"><span class="lbl">Zone</span><span class="val">: <span id="metaZone">RNG.A1</span></span></div>
+                    <div class="row"><span class="lbl">MPO Code</span><span class="val">: <span id="metaMpoCode">J002</span></span></div>
+                    <div class="row"><span class="lbl">Pharmacy Code</span><span class="val">: <span id="metaPharmCode">010023</span></span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DIVIDER & TITLE -->
+        <div class="section-divider"></div>
+        <div class="order-book-title">CUSTOMER ORDER BOOK</div>
+
+        <!-- 4. PRODUCT TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="col-sl">SL</th>
+                    <th class="col-prod">PRODUCT</th>
+                    <th class="col-pack">STRENGTH/ PACK<br>SIZE</th>
+                    <th class="col-mrp">MRP (TK.)</th>
+                    <th class="col-offer">OFFER PRICE</th>
+                    <th class="col-qty">ORDER<br>QUANTITY</th>
+                    <th class="col-disc">DISCOUNTED<br>AMOUNT</th>
+                    <th class="col-payable">PAYABLE</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceItemsBody">
+                <tr>
+                    <td class="col-sl">1</td>
+                    <td class="col-prod">Emiset 8</td>
+                    <td class="col-pack">8 mg Tablet [30's]</td>
+                    <td class="col-mrp">300.00</td>
+                    <td class="col-offer">207.00</td>
+                    <td class="col-qty">1</td>
+                    <td class="col-disc">-93.00</td>
+                    <td class="col-payable">207.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align: right;">Net Payable [VAT Included]</td>
+                    <td class="col-qty" id="totalQty">1</td>
+                    <td class="col-disc" id="totalDiscount">-93.00</td>
+                    <td class="col-payable" id="totalPayable">207.00</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- 5. SIGNATURES -->
+        <div class="signature-section">
+            <div class="signature-block">
+                Customer Signature
+            </div>
+            <div class="signature-block">
+                Authorised signature
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load order from URL param or default
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('id') || urlParams.get('order_id') || 'RNG16621';
+
+        fetch('/api/method/alco_ecommerce.api.get_field_orders')
+        .then(r => r.json())
+        .then(orders => {
+            const list = orders.message || orders || [];
+            const order = list.find(o => o.name === orderId) || list.find(o => o.name === 'RNG16621');
+            if (order) {
+                renderOrder(order);
+            }
+        })
+        .catch(err => console.error(err));
+
+        function renderOrder(order) {
+            document.getElementById('metaOrderId').innerText = order.name || 'RNG16621';
+            document.getElementById('metaOrderDate').innerText = order.order_date || '14/09/2026, 05:38 PM';
+            document.getElementById('metaMarket').innerText = order.market || order.territory_region || 'DOMAR';
+            document.getElementById('metaMpo').innerText = order.mpo || order.field_agent_name || 'SHAMAL CHANDRA RAY';
+            document.getElementById('metaDa').innerText = order.da || 'A.H KAFI';
+            document.getElementById('metaCustName').innerText = order.chemist_doctor_name || 'Konika pharmacy';
+            document.getElementById('metaPhone').innerText = order.phone_number || '01774502999';
+            document.getElementById('metaThana').innerText = order.thana || 'Domar';
+            document.getElementById('metaZone').innerText = order.zone || 'RNG.A1';
+            document.getElementById('metaMpoCode').innerText = order.mpo_code || 'J002';
+            document.getElementById('metaPharmCode').innerText = order.pharmacy_code || '010023';
+
+            const items = order.items && order.items.length ? order.items : [
+                { item_name: 'Emiset 8', pack_size: "8 mg Tablet [30's]", mrp: 300.0, rate: 207.0, qty: 1 }
+            ];
+
+            let tbodyHtml = '';
+            let totQty = 0;
+            let totDisc = 0;
+            let totPayable = 0;
+
+            items.forEach((item, idx) => {
+                const mrp = parseFloat(item.mrp || item.rate * 1.45 || 300.0);
+                const offer = parseFloat(item.rate || 207.0);
+                const qty = parseInt(item.qty || 1);
+                const disc = (offer - mrp) * qty;
+                const payable = offer * qty;
+
+                totQty += qty;
+                totDisc += disc;
+                totPayable += payable;
+
+                tbodyHtml += `
+                    <tr>
+                        <td class="col-sl">${idx + 1}</td>
+                        <td class="col-prod">${item.item_name || item.name || 'Emiset 8'}</td>
+                        <td class="col-pack">${item.pack_size || "8 mg Tablet [30's]"}</td>
+                        <td class="col-mrp">${mrp.toFixed(2)}</td>
+                        <td class="col-offer">${offer.toFixed(2)}</td>
+                        <td class="col-qty">${qty}</td>
+                        <td class="col-disc">${disc.toFixed(2)}</td>
+                        <td class="col-payable">${payable.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('invoiceItemsBody').innerHTML = tbodyHtml;
+            document.getElementById('totalQty').innerText = totQty;
+            document.getElementById('totalDiscount').innerText = totDisc.toFixed(2);
+            document.getElementById('totalPayable').innerText = totPayable.toFixed(2);
+        }
+    </script>
+</body>
+</html>

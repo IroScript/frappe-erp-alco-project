@@ -1,0 +1,4 @@
+# Alco Ecommerce Custom App Requirements for Frappe v16+
+# Target Python Version: >= 3.14
+frappe>=16.0.0
+Pillow>=12.0.0

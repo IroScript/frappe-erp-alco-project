@@ -1,0 +1,18 @@
+[build-system]
+requires = ["flit_core >=3.4.0,<4.0.0"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "alco_ecommerce"
+authors = [{name = "Alco Pharma", email = "admin@alcopharma.com"}]
+description = "Pharmaceutical Field Order, Invoice Printing & Reporting App for Alco Pharma"
+readme = "README.md"
+requires-python = ">=3.14"
+dynamic = ["version"]
+dependencies = [
+    "frappe",
+    "Pillow~=12.3.0",
+]
+
+[project.urls]
+Homepage = "https://alcopharma.com"

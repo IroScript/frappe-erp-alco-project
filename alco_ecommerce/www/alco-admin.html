@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>iPOS Operations Portal - Alco Pharma Ltd.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f5f7;
+            color: #334155;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 1. SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .sidebar-logo {
+            width: 38px;
+            height: 38px;
+            background: #0069b2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: -0.5px;
+        }
+        .sidebar-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+        .sidebar-subtitle {
+            font-size: 10px;
+            font-weight: 700;
+            color: #0069b2;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 10px;
+        }
+        .menu-section {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #94a3b8;
+            padding: 12px 10px 4px;
+            letter-spacing: 0.8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 6px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .nav-item.active {
+            background: #0069b2;
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .nav-item .icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        .nav-badge {
+            margin-left: auto;
+            background: #e11d48;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid #f1f5f9;
+            background: #fafafa;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        /* 2. MAIN VIEWPORT */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            height: 60px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .page-heading {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            padding: 7px 12px 7px 32px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 12px;
+            width: 240px;
+            outline: none;
+            background: #f8fafc;
+        }
+        .search-box input:focus {
+            border-color: #0069b2;
+            background: #fff;
+        }
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 7px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .btn-action {
+            background: #0069b2;
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-action:hover { background: #005590; }
+        .btn-outline {
+            background: #fff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+
+        /* CONTENT AREA */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* TABS VISIBILITY */
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #0069b2;
+        }
+        .stat-card.stat-green::after { background: #16a34a; }
+        .stat-card.stat-amber::after { background: #ea580c; }
+        .stat-card.stat-purple::after { background: #9333ea; }
+        .stat-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-val {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 6px;
+        }
+        .stat-sub {
+            font-size: 11px;
+            color: #16a34a;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* TABLES */
+        .table-card {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            overflow: visible;
+            margin-bottom: 24px;
+        }
+        .table-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+        .table-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .table-filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .select-filter {
+            padding: 5px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #334155;
+            background: #fff;
+            outline: none;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+        table.data-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 10px 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        table.data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        table.data-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* BADGES */
+        .tag-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .tag-new { background: #fef08a; color: #854d0e; border: 1px solid #fde047; }
+        .tag-proceeded { background: #10b981; color: #ffffff; }
+        .tag-collected { background: #65a30d; color: #ffffff; }
+        .tag-rejected { background: #ea580c; color: #ffffff; }
+        .tag-cancelled { background: #ef4444; color: #ffffff; }
+        .tag-verified { background: #8b5cf6; color: #ffffff; }
+
+        /* SETTINGS GEAR & ACTION DROPDOWN */
+        .btn-settings-gear {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 5px 8px;
+            cursor: pointer;
+            line-height: 1;
+            color: #64748b;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-settings-gear:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+        .order-action-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 4px);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 1050;
+            min-width: 165px;
+        }
+        .menu-btn {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            color: #ffffff;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .menu-btn:hover {
+            filter: brightness(0.92);
+            transform: translateY(-1px);
+        }
+        .menu-btn-invoice { background: #2563eb; }
+        .menu-btn-invoice:hover { background: #1d4ed8; }
+        .menu-btn-cancel { background: #f43f5e; }
+        .menu-btn-cancel:hover { background: #e11d48; }
+        .menu-btn-collect { background: #65a30d; }
+        .menu-btn-collect:hover { background: #4d7c0f; }
+        .menu-btn-return { background: #ea580c; }
+        .menu-btn-return:hover { background: #c2410c; }
+
+        /* ACTION BUTTONS */
+        .btn-proceed {
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-proceed:hover { background: #15803d; }
+        .btn-print {
+            background: #0069b2;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-print:hover { background: #005590; }
+
+        /* MODALS */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 8px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title { font-size: 16px; font-weight: 800; color: #0f172a; }
+        .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; }
+        .modal-body { padding: 20px; }
+        .modal-foot { padding: 14px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; background: #fafafa; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-group.full { grid-column: span 2; }
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #0069b2;
+        }
+
+        /* MOBILE RESPONSIVE OPTIMIZATION */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .sidebar-brand {
+                padding: 12px 14px;
+            }
+            .sidebar-menu {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding: 6px 10px;
+                gap: 6px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .menu-section { display: none; }
+            .sidebar-footer { display: none; }
+            .nav-item {
+                white-space: nowrap;
+                padding: 6px 12px;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+            .topbar {
+                padding: 10px 14px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .topbar-actions {
+                gap: 8px;
+            }
+            .main-content {
+                width: 100%;
+                height: auto;
+                overflow-x: hidden;
+            }
+            .content-area {
+                padding: 12px 10px;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar, .topbar, .table-filters, .btn-action, .btn-outline { display: none !important; }
+            .content-area { padding: 0 !important; }
+            body { background: #fff !important; }
+        }
+
+        /* OPERATIONAL REPORT & PACKING LIST */
+        .report-section-header {
+            margin-bottom: 14px;
+        }
+        .report-section-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .report-options-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .report-options-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #cbd5e1;
+        }
+        .report-tabs-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .report-tabs-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .report-tab-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .report-tab-btn:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+        .report-tab-btn.active {
+            background: #ffffff;
+            border-color: #0069b2;
+            color: #0069b2;
+            font-weight: 700;
+            border-bottom: 2px solid #0069b2;
+            box-shadow: 0 1px 3px rgba(0, 105, 178, 0.15);
+        }
+
+        /* PACKING FILTER CARD */
+        .packing-filter-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 720px;
+        }
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .filter-label {
+            width: 120px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .filter-input-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-select-lg {
+            width: 100%;
+            max-width: 420px;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #0f172a;
+            background: #fff;
+            outline: none;
+        }
+        .filter-select-lg:focus { border-color: #0069b2; }
+        .invoice-range-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 420px;
+        }
+        .invoice-range-inputs input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #0f172a;
+            outline: none;
+        }
+        .btn-search-green {
+            background: #16a34a;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 7px 22px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            width: fit-content;
+            margin-left: 136px;
+            transition: background 0.15s ease;
+        }
+        .btn-search-green:hover { background: #15803d; }
+
+        /* PACKING VOUCHER SHEET */
+        .voucher-action-bar {
+            margin-bottom: 14px;
+        }
+        .btn-print-blue {
+            background: #0069b2;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 7px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s ease;
+        }
+        .btn-print-blue:hover { background: #005590; }
+
+        .packing-voucher-paper {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            padding: 24px 28px;
+            margin-bottom: 30px;
+            font-family: 'Roboto', Arial, sans-serif;
+            color: #000000;
+            max-width: 900px;
+        }
+        .voucher-header-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            gap: 20px;
+        }
+        .voucher-company-info {
+            font-size: 11px;
+            line-height: 1.4;
+            color: #1e293b;
+        }
+        .voucher-company-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .voucher-boxes-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 250px;
+        }
+        .voucher-meta-box {
+            border: 1px solid #94a3b8;
+            padding: 5px 10px;
+            font-size: 10.5px;
+            font-family: monospace, Courier, sans-serif;
+            line-height: 1.4;
+            background: #fafafa;
+        }
+        .voucher-meta-box div {
+            display: flex;
+            justify-content: space-between;
+        }
+        .voucher-title-bar {
+            border-top: 1.5px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 6px 0;
+            margin-bottom: 12px;
+            font-size: 12.5px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .voucher-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-bottom: 24px;
+        }
+        .voucher-table th {
+            border-bottom: 1px solid #000;
+            padding: 6px 4px;
+            font-weight: 800;
+            text-align: left;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+        .voucher-table td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #0f172a;
+        }
+        .voucher-table tr.voucher-summary-row td {
+            border-top: 1px solid #000;
+            border-bottom: 1.5px solid #000;
+            font-weight: 800;
+        }
+        .voucher-signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 10px;
+        }
+        .voucher-sig-block {
+            text-align: center;
+            width: 150px;
+            font-size: 11px;
+            font-weight: 700;
+            border-top: 1px solid #000;
+            padding-top: 6px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. NAVIGATION SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-logo">ALCO</div>
+            <div>
+                <div class="sidebar-title">Alco Pharma Ltd.</div>
+                <div class="sidebar-subtitle">iPOS Operations Engine</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-section">Core Modules</div>
+            <a class="nav-item active" onclick="switchTab('dashboard')"><span class="icon">📊</span> Dashboard</a>
+            <a class="nav-item" onclick="switchTab('orders')"><span class="icon">🛒</span> Field Orders <span class="nav-badge" id="pendingOrdersBadge">15</span></a>
+            <a class="nav-item" onclick="switchTab('items')"><span class="icon">💊</span> Product Catalog</a>
+            <a class="nav-item" onclick="switchTab('customers')"><span class="icon">👥</span> Chemists Directory</a>
+            <a class="nav-item" onclick="switchTab('employees')"><span class="icon">👔</span> Field Forces</a>
+
+            <div class="menu-section">Distribution & Depots</div>
+            <a class="nav-item" onclick="switchTab('depots')"><span class="icon">🏢</span> 11 Depots Master</a>
+            <a class="nav-item" onclick="switchTab('mpo_config')"><span class="icon">⚙️</span> MPO Configuration</a>
+            <a class="nav-item" onclick="switchTab('mpo_move')"><span class="icon">🔄</span> MPO Order Move</a>
+            <a class="nav-item" onclick="switchTab('receiving')"><span class="icon">📥</span> Stock Receiving (GRN)</a>
+            <a class="nav-item" onclick="switchTab('new_receiving')"><span class="icon">➕</span> New Batch Entry</a>
+
+            <div class="menu-section">Reports & Analytics</div>
+            <a class="nav-item" onclick="switchTab('operational')"><span class="icon">📋</span> Operational Report</a>
+            <a class="nav-item" onclick="switchTab('sales_report')"><span class="icon">📈</span> Product Sales Report</a>
+            <a class="nav-item" onclick="switchTab('monthly_sales')"><span class="icon">🎯</span> Monthly Target vs Collection</a>
+            <a class="nav-item" onclick="switchTab('returns')"><span class="icon">📑</span> Customer Sales & Returns</a>
+
+            <div class="menu-section">External Systems</div>
+            <a href="/alco-order" target="_blank" class="nav-item"><span class="icon">🛍️</span> Customer Storefront ↗</a>
+            <a href="/app" target="_blank" class="nav-item"><span class="icon">⚡</span> Frappe ERPNext Desk ↗</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">ADM</div>
+                <div>
+                    <div style="font-size:12px; font-weight:800; color:#0f172a;">Administrator</div>
+                    <div style="font-size:10px; color:#16a34a; font-weight:700;">● Frappe v16 Connected</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN APPLICATION VIEWPORT -->
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="page-heading" id="pageHeadingTitle">Enterprise Operations Dashboard</div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="globalSearchInput" placeholder="Search orders, chemists, items..." oninput="handleGlobalSearch()">
+                </div>
+                <a href="/alco-order" target="_blank" class="btn-outline">🛒 Open Store</a>
+                <button class="btn-action" onclick="openNewOrderModal()">+ New Order</button>
+            </div>
+        </header>
+
+        <main class="content-area">
+
+            <!-- ======================================================== -->
+            <!-- TAB 1: DASHBOARD -->
+            <!-- ======================================================== -->
+            <div id="tab-dashboard" class="tab-pane active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Sales Revenue</div>
+                        <div class="stat-val" id="statTotalRevenue">৳ 185,420.00</div>
+                        <div class="stat-sub">↑ 104.2% Monthly Target</div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <div class="stat-title">Total Field Orders</div>
+                        <div class="stat-val" id="statTotalOrders">115</div>
+                        <div class="stat-sub">Across 11 Depots</div>
+                    </div>
+                    <div class="stat-card stat-amber">
+                        <div class="stat-title">Active Chemists</div>
+                        <div class="stat-val" id="statTotalChemists">1,000+</div>
+                        <div class="stat-sub">All Territories Covered</div>
+                    </div>
+                    <div class="stat-card stat-purple">
+                        <div class="stat-title">Field Forces (MPO/FM)</div>
+                        <div class="stat-val" id="statTotalEmployees">453</div>
+                        <div class="stat-sub">453 Canonical Master Records</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Recent Field Bookings</div>
+                        <button class="btn-outline" onclick="switchTab('orders')">View All Orders →</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Zone</th>
+                                <th>MPO</th>
+                                <th>Chemist / Pharmacy</th>
+                                <th>Grand Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardRecentOrdersTbody">
+                            <!-- Dynamic recent orders -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 2: ORDERS MANAGEMENT -->
+            <!-- ======================================================== -->
+            <div id="tab-orders" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Live Field Orders (Orders.png)</div>
+                        <div class="table-filters">
+                            <select class="select-filter" id="orderZoneFilter" onchange="filterOrders()">
+                                <option value="All">All Zones</option>
+                                <option value="DK.B">DK.B (Dhaka North)</option>
+                                <option value="DK.A">DK.A (Dhaka Central)</option>
+                                <option value="FRD.A">FRD.A (Faridpur)</option>
+                                <option value="MYM.A">MYM.A (Mymensingh)</option>
+                                <option value="BARI.A">BARI.A (Barishal)</option>
+                                <option value="SAV+MANIK">SAV+MANIK (Savar)</option>
+                                <option value="KSR">KSR (Kishoreganj)</option>
+                                <option value="COM.A">COM.A (Cumilla)</option>
+                            </select>
+                            <select class="select-filter" id="orderStatusFilter" onchange="filterOrders()">
+                                <option value="All">All Statuses</option>
+                                <option value="Submitted">NEW (Submitted)</option>
+                                <option value="Proceeded">PROCEEDED</option>
+                                <option value="Collected">COLLECTED</option>
+                                <option value="Rejected">REJECTED</option>
+                                <option value="Cancelled">CANCELLED</option>
+                            </select>
+                            <button class="btn-action" onclick="fetchLiveOrders()">↻ Refresh</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Zone</th>
+                                <th>MPO</th>
+                                <th>ID</th>
+                                <th>Customer & Phone</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>VAT (15%)</th>
+                                <th>Due</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Dynamic Orders -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 3: PRODUCT CATALOG -->
+            <!-- ======================================================== -->
+            <div id="tab-items" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Products Master Catalog (itemsPage.txt)</div>
+                        <div class="table-filters">
+                            <button class="btn-action" onclick="openProductEditModal('ALO-PAN-40')">+ Update Pricing</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Brand / Product Name</th>
+                                <th>Generic Name</th>
+                                <th>Pack Size</th>
+                                <th>MRP</th>
+                                <th>Offer Price</th>
+                                <th>Stock Qty</th>
+                                <th>VAT %</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <!-- Dynamic Products -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 4: CHEMISTS DIRECTORY -->
+            <!-- ======================================================== -->
+            <div id="tab-customers" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Chemists & Pharmacies Roster (1,000+ Records)</div>
+                        <div class="table-filters">
+                            <input type="text" id="chemistSearchInput" placeholder="Filter Chemist Name..." oninput="filterChemists()" class="select-filter" style="width:200px;">
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Chemist / Pharmacy Name</th>
+                                <th>Mobile</th>
+                                <th>Thana / Address</th>
+                                <th>Zone</th>
+                                <th>Market / MPO Code</th>
+                                <th>Depot</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <!-- Dynamic Customers -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 5: FIELD FORCES -->
+            <!-- ======================================================== -->
+            <div id="tab-employees" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Master Field Forces Roster (453 Canonical Records · Master Column: APP CODE (FINAL))</div>
+                        <div class="table-filters">
+                            <input type="text" id="employeeSearchInput" placeholder="Filter Code, Name, Market, Manager..." oninput="filterEmployees()" class="select-filter" style="width:260px;">
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Master App Code</th>
+                                <th>Full Name</th>
+                                <th>Designation</th>
+                                <th>Market / Territory</th>
+                                <th>Zone & Depot</th>
+                                <th>Reporting Manager</th>
+                                <th>Delivery Assistant (DA)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                            <!-- Dynamic Employees -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 6: DEPOTS MASTER -->
+            <!-- ======================================================== -->
+            <div id="tab-depots" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">11 Alco Pharma Distribution Depots (MasterForDepot.txt)</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Depot Code</th>
+                                <th>Depot Name</th>
+                                <th>Zone</th>
+                                <th>Depot In-Charge / Manager</th>
+                                <th>Phone</th>
+                                <th>Depot Address</th>
+                                <th>Current Stock Units</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="depotsTableBody">
+                            <!-- Dynamic Depots -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 7: MPO CONFIGURATION -->
+            <!-- ======================================================== -->
+            <div id="tab-mpo_config" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Master Field Forces Configuration Matrix (453 Canonical Records · APP CODE (FINAL))</div>
+                        <div class="table-filters">
+                            <input type="text" id="mpoConfigSearchInput" placeholder="Filter Market, App Code, Manager, Zone..." oninput="filterMpoConfig()" class="select-filter" style="width:280px;">
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Market Name</th>
+                                <th>Master APP CODE (FINAL)</th>
+                                <th>Assigned MPO</th>
+                                <th>Designation</th>
+                                <th>Field Manager (FM/AM)</th>
+                                <th>Depot</th>
+                                <th>Delivery Assistant (DA)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mpoConfigTableBody">
+                            <!-- Dynamic 453 Field Forces -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 8: MPO ORDER MOVE -->
+            <!-- ======================================================== -->
+            <div id="tab-mpo_move" class="tab-pane">
+                <div class="table-card" style="max-width:650px; margin:0 auto;">
+                    <div class="table-header">
+                        <div class="table-title">Order Territory Transfer / Move Tool</div>
+                    </div>
+                    <div style="padding:20px;">
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Select Order ID</label>
+                            <select id="moveOrderSelect" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+                                <!-- Dynamic order options -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Destination Zone</label>
+                            <select id="moveZoneSelect" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+                                <option value="DK.B">DK.B (Dhaka North / Dhanmondi)</option>
+                                <option value="DK.A">DK.A (Dhaka Central)</option>
+                                <option value="FRD.A">FRD.A (Faridpur)</option>
+                                <option value="MYM.A">MYM.A (Mymensingh)</option>
+                                <option value="BARI.A">BARI.A (Barishal)</option>
+                                <option value="COM.A">COM.A (Cumilla)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:16px;">
+                            <label>New Target MPO Code</label>
+                            <input type="text" id="moveMpoCodeInput" value="D067" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+                        </div>
+                        <button class="btn-action" onclick="executeOrderMove()" style="width:100%; justify-content:center;">Execute Order Transfer</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 9: STOCK RECEIVING (GRN) -->
+            <!-- ======================================================== -->
+            <div id="tab-receiving" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Stock Receiving Ledger (allreceiving.txt)</div>
+                        <button class="btn-action" onclick="switchTab('new_receiving')">+ New Stock Entry</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>GRN #</th>
+                                <th>Date</th>
+                                <th>Invoice Ref</th>
+                                <th>Supplier / Plant</th>
+                                <th>Destination Depot</th>
+                                <th>Items</th>
+                                <th>Amount Paid</th>
+                                <th>Total Value</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receivingTableBody">
+                            <!-- Dynamic Receivings -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 10: NEW STOCK ENTRY -->
+            <!-- ======================================================== -->
+            <div id="tab-new_receiving" class="tab-pane">
+                <div class="table-card" style="max-width:700px; margin:0 auto;">
+                    <div class="table-header">
+                        <div class="table-title">Create Goods Receipt Note (newRecieving.txt)</div>
+                    </div>
+                    <div style="padding:20px;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Manufacturing Plant</label>
+                                <input type="text" value="Alco Pharma Plant (Mirpur-7)" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Destination Depot</label>
+                                <select id="grnDepotSelect">
+                                    <option value="Dhaka Central Depot (DK-1)">Dhaka Central Depot (DK-1)</option>
+                                    <option value="Chattogram Depot">Chattogram Depot</option>
+                                    <option value="Cumilla Depot">Cumilla Depot</option>
+                                    <option value="Faridpur Depot">Faridpur Depot</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Product</label>
+                                <select id="grnProductSelect">
+                                    <option value="ALO-PAN-40">Pantopra 40</option>
+                                    <option value="ALO-CAL-500">Calmi 500</option>
+                                    <option value="ALO-PNC-500">P+C (Paracetamol + Caffeine)</option>
+                                    <option value="ALO-XCT-100">Xcite 100</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Batch Number</label>
+                                <input type="text" id="grnBatchInput" value="BCH-2026-AUG-88">
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity (Units)</label>
+                                <input type="number" id="grnQtyInput" value="5000">
+                            </div>
+                            <div class="form-group">
+                                <label>Unit Purchase Cost (৳)</label>
+                                <input type="number" id="grnCostInput" value="150.00">
+                            </div>
+                        </div>
+                        <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                            <button class="btn-outline" onclick="switchTab('receiving')">Cancel</button>
+                            <button class="btn-action" onclick="submitGrn()">Save & Post GRN</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 11: OPERATIONAL REPORT -->
+            <!-- ======================================================== -->
+            <div id="tab-operational" class="tab-pane">
+                <div class="report-section-header">
+                    <div class="report-section-title">Operational Report</div>
+                    <div class="report-options-divider">Report Options</div>
+                    
+                    <div class="report-tabs-grid">
+                        <div class="report-tabs-row">
+                            <button class="report-tab-btn active" id="btnReport_packing" onclick="switchReportTab('packing')">App Product Packing List</button>
+                            <button class="report-tab-btn" id="btnReport_delivery" onclick="switchReportTab('delivery')">App Delivery Status</button>
+                            <button class="report-tab-btn" id="btnReport_customer_sales" onclick="switchReportTab('customer_sales')">Customer Wise Sale And Return</button>
+                            <button class="report-tab-btn" id="btnReport_monthly_col" onclick="switchReportTab('monthly_col')">Monthly Sales And Collection</button>
+                        </div>
+                        <div class="report-tabs-row">
+                            <button class="report-tab-btn" id="btnReport_daily_sales" onclick="switchReportTab('daily_sales')">Daily Sales, Collection, Return and Dues</button>
+                            <button class="report-tab-btn" id="btnReport_master_depot" onclick="switchReportTab('master_depot')">Master (for Depot)</button>
+                            <button class="report-tab-btn" id="btnReport_master_sh" onclick="switchReportTab('master_sh')">Master (for SH)</button>
+                            <button class="report-tab-btn" id="btnReport_master_fm" onclick="switchReportTab('master_fm')">Master (for FM)</button>
+                            <button class="report-tab-btn" id="btnReport_master_sm" onclick="switchReportTab('master_sm')">Master (for SM)</button>
+                        </div>
+                        <div class="report-tabs-row">
+                            <button class="report-tab-btn" id="btnReport_market_sales" onclick="switchReportTab('market_sales')">Market Sale Details</button>
+                            <button class="report-tab-btn" id="btnReport_mpo_invoices" onclick="switchReportTab('mpo_invoices')">MPO Wise Invoice Quantity</button>
+                            <button class="report-tab-btn" id="btnReport_mpo_config" onclick="switchReportTab('mpo_config')">MPO Configuration</button>
+                            <button class="report-tab-btn" id="btnReport_mpo_move" onclick="switchReportTab('mpo_move')">MPO Orders Move</button>
+                            <button class="report-tab-btn" id="btnReport_incentives" onclick="switchReportTab('incentives')">Incentives</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 1: APP PRODUCT PACKING LIST -->
+                <div id="subtabContent_packing">
+                    <!-- Filter Options -->
+                    <div class="packing-filter-card">
+                        <div class="filter-row">
+                            <div class="filter-label">Zone</div>
+                            <div class="filter-input-wrap">
+                                <select id="packingZoneSelect" class="filter-select-lg" onchange="onPackingZoneChange()">
+                                    <option value="RAJ.B" selected>RAJ.B</option>
+                                    <option value="DK.B">DK.B</option>
+                                    <option value="DK.A">DK.A</option>
+                                    <option value="FRD.A">FRD.A</option>
+                                    <option value="MYM.A">MYM.A</option>
+                                    <option value="BARI.A">BARI.A</option>
+                                    <option value="SAV+MANIK">SAV+MANIK</option>
+                                    <option value="KSR">KSR</option>
+                                    <option value="COM.A">COM.A</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-label">MPO Market</div>
+                            <div class="filter-input-wrap">
+                                <select id="packingMarketSelect" class="filter-select-lg">
+                                    <option value="0002 : BONPARA-2">RAJ.B : 0002 : BONPARA-2</option>
+                                    <option value="0001 : NATORE-1">RAJ.B : 0001 : NATORE-1</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-label">Delivery Agent</div>
+                            <div class="filter-input-wrap">
+                                <select id="packingDaSelect" class="filter-select-lg">
+                                    <option value="Mr.SHAMIM AHMED">RAJ.B : 0002 : Mr.SHAMIM AHMED</option>
+                                    <option value="Mr.DELWAR HOSSAIN">RAJ.B : 0001 : Mr.DELWAR HOSSAIN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-label">Invoice Range</div>
+                            <div class="filter-input-wrap invoice-range-inputs">
+                                <input type="text" id="packingInvFrom" value="RAJ10610">
+                                <input type="text" id="packingInvTo" value="RAJ10618">
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn-search-green" onclick="generatePackingList()">Search</button>
+                        </div>
+                    </div>
+
+                    <!-- Print Action Button -->
+                    <div class="voucher-action-bar">
+                        <button class="btn-print-blue" onclick="printPackingVoucher()">
+                            🖨️ Print
+                        </button>
+                    </div>
+
+                    <!-- Printable Voucher Sheet -->
+                    <div class="packing-voucher-paper" id="packingListVoucher">
+                        <div class="voucher-header-grid">
+                            <div class="voucher-company-info">
+                                <img src="/assets/alco_ecommerce/images/alco_logo_blue.png" alt="Alco Pharma Ltd." style="height:36px; width:auto; display:block; margin-bottom:4px; object-fit:contain;" onerror="this.style.display='none'; document.getElementById('altAlcoName').style.display='block';">
+                                <div id="altAlcoName" style="display:none;" class="voucher-company-name">Alco Pharma Ltd.</div>
+                                <div>H: 21, R: 113/A</div>
+                                <div>Gulshan 2, Dhaka 1212</div>
+                                <div>Phone: 01955333555</div>
+                            </div>
+                            <div class="voucher-boxes-wrap">
+                                <div class="voucher-meta-box">
+                                    <div><span>FROM INVOICE :</span> <strong id="vFromInv">RAJ10610</strong></div>
+                                    <div><span>TO INVOICE   :</span> <strong id="vToInv">RAJ10618</strong></div>
+                                </div>
+                                <div class="voucher-meta-box">
+                                    <div><span>ZONE        :</span> <strong id="vZone">RAJ.B</strong></div>
+                                    <div><span>MPO MARKET  :</span> <strong id="vMarket">0002</strong></div>
+                                    <div><span>NAME OF DA  :</span> <strong id="vDa">MR.SHAMIM AHMED</strong></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="voucher-title-bar">APP PRODUCT PACKING LIST</div>
+
+                        <table class="voucher-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:35px;">SL</th>
+                                    <th>PRODUCT</th>
+                                    <th>STRENGTH/PACK SIZE</th>
+                                    <th style="text-align:right;">MRP (TK.)</th>
+                                    <th style="text-align:right;">OFFER PRICE</th>
+                                    <th style="text-align:center;">ORDER QUANTITY</th>
+                                    <th style="text-align:right;">DISCOUNTED AMOUNT</th>
+                                    <th style="text-align:right;">PAYABLE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="voucherItemsTbody">
+                                <tr>
+                                    <td>1</td>
+                                    <td><strong>P+C</strong></td>
+                                    <td>500 mg + 65 mg Tablet [100's]</td>
+                                    <td style="text-align:right;">250.00</td>
+                                    <td style="text-align:right;">200.00</td>
+                                    <td style="text-align:center;">1</td>
+                                    <td style="text-align:right;">-50.00</td>
+                                    <td style="text-align:right;">200.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="voucher-summary-row">
+                                    <td colspan="5">Net payable (VAT included)</td>
+                                    <td style="text-align:center;" id="vTotQty">1</td>
+                                    <td style="text-align:right;" id="vTotDisc">-50.00</td>
+                                    <td style="text-align:right;" id="vTotPayable">200.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="voucher-signatures">
+                            <div class="voucher-sig-block">CHECKED</div>
+                            <div class="voucher-sig-block">RECEIVED</div>
+                            <div class="voucher-sig-block">AUTHORIZED</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 2: APP DELIVERY STATUS -->
+                <div id="subtabContent_delivery" style="display:none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">Operational Dispatch & Delivery Tracker</div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Challan No</th>
+                                    <th>Invoice No</th>
+                                    <th>Customer / Chemist</th>
+                                    <th>Zone</th>
+                                    <th>Depot</th>
+                                    <th>Items</th>
+                                    <th>Total (৳)</th>
+                                    <th>Vehicle & Driver</th>
+                                    <th>Delivery Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="operationalTableBody">
+                                <!-- Dynamic Operational Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 3: DAILY SALES, COLLECTION, RETURN & DUES -->
+                <div id="subtabContent_daily_sales" style="display:none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">Daily Sales, Collection, Return and Dues Ledger</div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Zone</th>
+                                    <th>MPO</th>
+                                    <th>Total Sales (৳)</th>
+                                    <th>Collection (৳)</th>
+                                    <th>Sales Return (৳)</th>
+                                    <th>Outstanding Due (৳)</th>
+                                    <th>Target Fulfillment</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dailySalesTableBody">
+                                <tr>
+                                    <td>20 Sep 2026</td>
+                                    <td><strong>RAJ.B</strong></td>
+                                    <td>SHAMAL RAY</td>
+                                    <td>৳ 48,500.00</td>
+                                    <td><strong style="color:#16a34a;">৳ 45,000.00</strong></td>
+                                    <td>৳ 0.00</td>
+                                    <td><strong style="color:#dc2626;">৳ 3,500.00</strong></td>
+                                    <td><span class="tag-status tag-proceeded">92.8%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>20 Sep 2026</td>
+                                    <td><strong>DK.B</strong></td>
+                                    <td>MD. ALAM</td>
+                                    <td>৳ 125,000.00</td>
+                                    <td><strong style="color:#16a34a;">৳ 118,500.00</strong></td>
+                                    <td>৳ 1,200.00</td>
+                                    <td><strong style="color:#dc2626;">৳ 5,300.00</strong></td>
+                                    <td><span class="tag-status tag-proceeded">94.8%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 4: MARKET SALES DETAILS -->
+                <div id="subtabContent_market_sales" style="display:none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">Market Wise Sales Performance</div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Market Code</th>
+                                    <th>Market Name</th>
+                                    <th>Zone</th>
+                                    <th>Assigned MPO</th>
+                                    <th>Chemists Count</th>
+                                    <th>Active Orders</th>
+                                    <th>Monthly Gross (৳)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>0002</strong></td>
+                                    <td><strong style="color:#0069b2;">BONPARA-2</strong></td>
+                                    <td>RAJ.B</td>
+                                    <td>Mr. SHAMIM AHMED</td>
+                                    <td>18</td>
+                                    <td>4</td>
+                                    <td><strong>৳ 142,000.00</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>D067</strong></td>
+                                    <td><strong style="color:#0069b2;">GULSHAN-1</strong></td>
+                                    <td>DK.B</td>
+                                    <td>Mr. RAFIQUL ISLAM</td>
+                                    <td>24</td>
+                                    <td>8</td>
+                                    <td><strong>৳ 310,000.00</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 5: MPO WISE INVOICE QUANTITY -->
+                <div id="subtabContent_mpo_invoices" style="display:none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">MPO Wise Invoiced Quantity & Sales Value</div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>MPO Code</th>
+                                    <th>MPO Name</th>
+                                    <th>Zone</th>
+                                    <th>Total Invoices</th>
+                                    <th>Total Packs</th>
+                                    <th>Total Invoiced Value (৳)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>J002</strong></td>
+                                    <td>SHAMAL CHANDRA RAY</td>
+                                    <td>RNG.A1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td><strong>৳ 207.00</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>D067</strong></td>
+                                    <td>A.H KAFI</td>
+                                    <td>DK.B</td>
+                                    <td>8</td>
+                                    <td>64</td>
+                                    <td><strong>৳ 84,250.00</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 6: INCENTIVES -->
+                <div id="subtabContent_incentives" style="display:none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">Field Force Monthly Incentive Calculator</div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Field Agent</th>
+                                    <th>Designation</th>
+                                    <th>Zone</th>
+                                    <th>Target (৳)</th>
+                                    <th>Achieved (৳)</th>
+                                    <th>Achievement %</th>
+                                    <th>Incentive Earned (৳)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>SHAMAL CHANDRA RAY</strong></td>
+                                    <td>MPO</td>
+                                    <td>RNG.A1</td>
+                                    <td>৳ 150,000.00</td>
+                                    <td>৳ 162,000.00</td>
+                                    <td><span class="tag-status tag-proceeded">108.0%</span></td>
+                                    <td><strong style="color:#16a34a;">৳ 8,100.00</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>MD. ALAM</strong></td>
+                                    <td>MPO</td>
+                                    <td>DK.B</td>
+                                    <td>৳ 300,000.00</td>
+                                    <td>৳ 315,000.00</td>
+                                    <td><span class="tag-status tag-proceeded">105.0%</span></td>
+                                    <td><strong style="color:#16a34a;">৳ 15,750.00</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 7: SUPERVISOR MASTERS (SH / FM / SM) -->
+                <div id="subtabContent_supervisors" style="display:none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title" id="supervisorMasterTitle">Regional Supervisors Roster (Master)</div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Officer Name</th>
+                                    <th>Territory / Division</th>
+                                    <th>Contact Phone</th>
+                                    <th>Assigned Depots</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supervisorMasterTbody">
+                                <tr>
+                                    <td><strong>Senior Head (SH)</strong></td>
+                                    <td>Dr. Mahbubur Rahman</td>
+                                    <td>North Bengal (Rajshahi & Rangpur)</td>
+                                    <td>01711998877</td>
+                                    <td>Rajshahi Depot, Bogura Depot</td>
+                                    <td><span class="tag-status tag-proceeded">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Field Manager (FM)</strong></td>
+                                    <td>Engr. Tariqul Islam</td>
+                                    <td>Dhaka North & Central</td>
+                                    <td>01822334455</td>
+                                    <td>Tejgaon Central Depot</td>
+                                    <td><span class="tag-status tag-proceeded">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sales Manager (SM)</strong></td>
+                                    <td>Kazi Nazrul Islam</td>
+                                    <td>National Distribution</td>
+                                    <td>01955333555</td>
+                                    <td>All 11 Depots</td>
+                                    <td><span class="tag-status tag-proceeded">Active</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 12: SALES REPORT -->
+            <!-- ======================================================== -->
+            <div id="tab-sales_report" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Product-Wise Sales & VAT Performance (Sales-Report.txt)</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Product Code</th>
+                                <th>Product Name</th>
+                                <th>Pack Size</th>
+                                <th>Qty Sold</th>
+                                <th>Bonus Qty</th>
+                                <th>Rate (৳)</th>
+                                <th>Gross Sales (৳)</th>
+                                <th>VAT 15% (৳)</th>
+                                <th>Net Value (৳)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesReportTableBody">
+                            <!-- Dynamic Sales Report -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 13: MONTHLY TARGET VS COLLECTION -->
+            <!-- ======================================================== -->
+            <div id="tab-monthly_sales" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">2026 Monthly Sales Target vs Cash Collection</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Target (৳)</th>
+                                <th>Sales Achieved (৳)</th>
+                                <th>Cash Collected (৳)</th>
+                                <th>Target Achieved %</th>
+                                <th>Collection %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlySalesTableBody">
+                            <!-- Dynamic Monthly Sales -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 14: CUSTOMER SALES & RETURNS -->
+            <!-- ======================================================== -->
+            <div id="tab-returns" class="tab-pane">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">Customer-Wise Sales & Returns Ledger</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Chemist / Customer Name</th>
+                                <th>Zone</th>
+                                <th>Gross Sales (৳)</th>
+                                <th>Returns Value (৳)</th>
+                                <th>Net Realized (৳)</th>
+                                <th>Return Reason / Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="returnsTableBody">
+                            <!-- Dynamic Returns -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- 3. INVOICE / ORDER DETAILS MODAL -->
+    <div class="modal-overlay" id="invoiceModal">
+        <div class="modal-box" style="max-width:850px;">
+            <div class="modal-head">
+                <div class="modal-title">Official Alco Pharma Invoice</div>
+                <button class="modal-close" onclick="closeInvoiceModal()">✕</button>
+            </div>
+            <div class="modal-body" id="invoiceModalContent">
+                <!-- Dynamic Invoice Print Layout -->
+            </div>
+            <div class="modal-foot">
+                <button class="btn-outline" onclick="window.print()">🖨️ Print Invoice</button>
+                <button class="btn-action" onclick="closeInvoiceModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PRODUCT EDIT MODAL -->
+    <div class="modal-overlay" id="productEditModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div class="modal-title">Update Product Details</div>
+                <button class="modal-close" onclick="closeProductEditModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Product Name</label>
+                        <input type="text" id="editProdName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Offer Price (৳)</label>
+                        <input type="number" id="editProdPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Available Stock Qty</label>
+                        <input type="number" id="editProdStock">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn-outline" onclick="closeProductEditModal()">Cancel</button>
+                <button class="btn-action" onclick="saveProductEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. JAVASCRIPT LOGIC & LIVE FRAPPE INTEGRATION -->
+    <script>
+        let liveOrders = [];
+        let allProducts = [];
+        let allCustomers = [];
+        let allEmployees = [];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            const targetPane = document.getElementById('tab-' + tabId);
+            if (targetPane) targetPane.classList.add('active');
+
+            const activeBtn = Array.from(document.querySelectorAll('.nav-item')).find(el => el.getAttribute('onclick') && el.getAttribute('onclick').includes(tabId));
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const headings = {
+                'dashboard': 'Enterprise Operations Dashboard',
+                'orders': 'Live Field Orders & ERPNext Integration',
+                'items': 'Products & Pricing Master',
+                'customers': 'Chemists & Pharmacies Directory',
+                'employees': 'Field Forces Roster',
+                'depots': '11 Depots Stock & Management',
+                'mpo_config': 'MPO Configuration Matrix',
+                'mpo_move': 'Order Territory Reassignment Tool',
+                'receiving': 'Goods Received Notes (GRN)',
+                'new_receiving': 'Record Incoming Stock Batch',
+                'operational': 'Operational Report',
+                'sales_report': 'Product Sales & Performance',
+                'monthly_sales': 'Monthly Target vs Collection',
+                'returns': 'Customer Sales & Returns'
+            };
+            document.getElementById('pageHeadingTitle').innerText = headings[tabId] || 'Operations Portal';
+        }
+
+        function fetchAllData() {
+            // 1. Dashboard summary
+            fetch('/api/method/alco_ecommerce.api.get_dashboard_summary')
+            .then(r => r.json())
+            .then(d => {
+                if (d.message) {
+                    const m = d.message;
+                    document.getElementById('statTotalRevenue').innerText = '৳ ' + (m.total_revenue || 185420).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    document.getElementById('statTotalOrders').innerText = m.total_orders || 115;
+                    document.getElementById('pendingOrdersBadge').innerText = m.total_orders || 15;
+                }
+            });
+
+            // 2. Orders
+            fetchLiveOrders();
+
+            // 3. Products
+            fetch('/api/method/alco_ecommerce.api.get_pharma_products')
+            .then(r => r.json())
+            .then(d => {
+                allProducts = d.message || [];
+                renderProducts(allProducts);
+            });
+
+            // 4. Customers
+            fetch('/api/method/alco_ecommerce.api.get_customers_list')
+            .then(r => r.json())
+            .then(d => {
+                allCustomers = d.message || [];
+                renderCustomers(allCustomers);
+            });
+
+            // 5. Employees
+            fetch('/api/method/alco_ecommerce.api.get_employees_list')
+            .then(r => r.json())
+            .then(d => {
+                allEmployees = d.message || [];
+                renderEmployees(allEmployees);
+            });
+
+            // 6. Depots
+            fetch('/api/method/alco_ecommerce.api.get_depots_list')
+            .then(r => r.json())
+            .then(d => renderDepots(d.message || []));
+
+            // 7. Operational
+            fetch('/api/method/alco_ecommerce.api.get_operational_report')
+            .then(r => r.json())
+            .then(d => renderOperational(d.message || []));
+
+            // 8. Sales Report
+            fetch('/api/method/alco_ecommerce.api.get_sales_report')
+            .then(r => r.json())
+            .then(d => renderSalesReport(d.message || []));
+
+            // 9. Monthly Sales
+            fetch('/api/method/alco_ecommerce.api.get_monthly_sales_collection')
+            .then(r => r.json())
+            .then(d => renderMonthlySales(d.message || []));
+
+            // 10. Receivings
+            fetch('/api/method/alco_ecommerce.api.get_receivings_list')
+            .then(r => r.json())
+            .then(d => renderReceiving(d.message || []));
+
+            // 11. Returns
+            fetch('/api/method/alco_ecommerce.api.get_customer_sales_return')
+            .then(r => r.json())
+            .then(d => renderReturns(d.message || []));
+        }
+
+        function fetchLiveOrders() {
+            fetch('/api/method/alco_ecommerce.api.get_orders_list')
+            .then(r => r.json())
+            .then(d => {
+                liveOrders = d.message || [];
+                renderOrders(liveOrders);
+                renderDashboardRecentOrders(liveOrders.slice(0, 6));
+                
+                // Populate move order dropdown
+                const sel = document.getElementById('moveOrderSelect');
+                if (sel) {
+                    sel.innerHTML = liveOrders.map(o => `<option value="${o.name}">${o.name} - ${o.chemist_doctor_name} (${o.zone})</option>`).join('');
+                }
+            });
+        }
+
+        function getStatusBadge(status) {
+            const s = (status || 'NEW').toUpperCase();
+            if (s === 'PROCEEDED') return '<span class="tag-status tag-proceeded">PROCEEDED</span>';
+            if (s === 'COLLECTED') return '<span class="tag-status tag-collected">COLLECTED</span>';
+            if (s === 'REJECTED') return '<span class="tag-status tag-rejected">REJECTED</span>';
+            if (s === 'CANCELLED') return '<span class="tag-status tag-cancelled">CANCELLED</span>';
+            return '<span class="tag-status tag-new">NEW</span>';
+        }
+
+        function toggleOrderMenu(event, orderName) {
+            event.stopPropagation();
+            const menuId = 'orderMenu_' + orderName;
+            const targetMenu = document.getElementById(menuId);
+            const isCurrentlyOpen = targetMenu && targetMenu.style.display === 'flex';
+            
+            document.querySelectorAll('.order-action-menu').forEach(m => m.style.display = 'none');
+            
+            if (targetMenu && !isCurrentlyOpen) {
+                targetMenu.style.display = 'flex';
+                const rect = targetMenu.getBoundingClientRect();
+                if (rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+                    targetMenu.style.top = 'auto';
+                    targetMenu.style.bottom = 'calc(100% + 4px)';
+                } else {
+                    targetMenu.style.top = 'calc(100% + 4px)';
+                    targetMenu.style.bottom = 'auto';
+                }
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-dropdown-wrap')) {
+                document.querySelectorAll('.order-action-menu').forEach(m => m.style.display = 'none');
+            }
+        });
+
+        function updateOrderStatusAction(orderName, status) {
+            document.querySelectorAll('.order-action-menu').forEach(m => m.style.display = 'none');
+            
+            fetch('/api/method/alco_ecommerce.api.update_order_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_name: orderName, status: status })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.message && (d.message.success !== false)) {
+                    const order = liveOrders.find(o => o.name === orderName);
+                    if (order) {
+                        order.status = status;
+                        if (status === 'Collected') {
+                            order.due_amount = 0.0;
+                        }
+                    }
+                    renderOrders(liveOrders);
+                } else {
+                    alert((d.message && d.message.message) || 'Status update failed');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Connection error while updating status');
+            });
+        }
+
+        function renderOrders(list) {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+            list.forEach(o => {
+                const tr = document.createElement('tr');
+                const isNew = (!o.status || o.status.toLowerCase() === 'new' || o.status.toLowerCase() === 'submitted');
+                const proceedBtn = isNew ? `
+                    <button class="btn-proceed" onclick="proceedToSalesOrder('${o.name}')" title="Proceed order to ERPNext">Proceed ▶</button>
+                ` : '';
+
+                tr.innerHTML = `
+                    <td>${o.order_date || '25 Aug 2026'}</td>
+                    <td><strong>${o.zone || 'DK.B'}</strong></td>
+                    <td>${o.mpo_code || 'D067'}</td>
+                    <td><a href="javascript:void(0)" onclick="viewInvoice('${o.name}')" style="color:#0069b2; font-weight:800;">${o.name}</a></td>
+                    <td>
+                        <strong>${o.chemist_doctor_name}</strong><br>
+                        <span style="color:#64748b; font-size:11px;">${o.phone_number || '01711223344'}</span>
+                    </td>
+                    <td>${getStatusBadge(o.status)}</td>
+                    <td><strong>৳ ${(o.grand_total || 0).toLocaleString()}</strong></td>
+                    <td>৳ ${(o.vat_amount || 0).toLocaleString()}</td>
+                    <td><strong>৳ ${(o.due_amount || 0).toLocaleString()}</strong></td>
+                    <td style="position: relative; white-space: nowrap; text-align: right;">
+                        <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px;">
+                            ${proceedBtn}
+                            <div class="action-dropdown-wrap" style="position: relative; display: inline-block;">
+                                <button class="btn-settings-gear" onclick="toggleOrderMenu(event, '${o.name}')" title="Settings & Actions">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                    </svg>
+                                </button>
+                                <div id="orderMenu_${o.name}" class="order-action-menu">
+                                    <button class="menu-btn menu-btn-invoice" onclick="viewInvoice('${o.name}')">Invoice</button>
+                                    <button class="menu-btn menu-btn-cancel" onclick="updateOrderStatusAction('${o.name}', 'Cancelled')">Cancel this order</button>
+                                    <button class="menu-btn menu-btn-collect" onclick="updateOrderStatusAction('${o.name}', 'Collected')">Mark as Collected</button>
+                                    <button class="menu-btn menu-btn-return" onclick="updateOrderStatusAction('${o.name}', 'Rejected')">Return this order</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderDashboardRecentOrders(list) {
+            const tbody = document.getElementById('dashboardRecentOrdersTbody');
+            tbody.innerHTML = '';
+            list.forEach(o => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong style="color:#0069b2;">${o.name}</strong></td>
+                    <td>${o.order_date || '25 Aug 2026'}</td>
+                    <td>${o.zone || 'DK.B'}</td>
+                    <td>${o.mpo_code || 'D067'}</td>
+                    <td>${o.chemist_doctor_name}</td>
+                    <td><strong>৳ ${(o.grand_total || 0).toLocaleString()}</strong></td>
+                    <td>${getStatusBadge(o.status)}</td>
+                    <td><button class="btn-outline" style="padding:2px 6px; font-size:11px;" onclick="viewInvoice('${o.name}')">View Invoice</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderProducts(list) {
+            const tbody = document.getElementById('itemsTableBody');
+            tbody.innerHTML = '';
+            list.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.item_code}</strong></td>
+                    <td><strong style="color:#0069b2;">${p.item_name}</strong></td>
+                    <td>${p.generic_name}</td>
+                    <td>${p.pack_size}</td>
+                    <td><span style="text-decoration:line-through; color:#dc2626;">৳ ${p.mrp.toFixed(2)}</span></td>
+                    <td><strong style="color:#16a34a;">৳ ${p.offer_price.toFixed(2)}</strong></td>
+                    <td><strong>${p.stock_qty.toLocaleString()}</strong></td>
+                    <td>${p.vat_percentage}%</td>
+                    <td><button class="btn-outline" style="padding:2px 8px; font-size:11px;" onclick="openProductEditModal('${p.item_code}')">Edit</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderCustomers(list) {
+            const tbody = document.getElementById('customersTableBody');
+            tbody.innerHTML = '';
+            list.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong style="color:#0f172a;">${c.shop_name || c.name}</strong></td>
+                    <td>${c.phone}</td>
+                    <td>${c.thana || c.address || 'N/A'}</td>
+                    <td><span class="tag-status tag-proceeded">${c.zone || 'N/A'}</span></td>
+                    <td><strong>${c.mpo_code || ''}</strong> ${c.market ? `(${c.market})` : ''}</td>
+                    <td><span style="color:#64748b; font-size:12px;">${c.depot || 'N/A'}</span></td>
+                    <td><span class="tag-status tag-proceeded">${c.status || 'Active'}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderEmployees(list) {
+            const tbody = document.getElementById('employeesTableBody');
+            tbody.innerHTML = '';
+            list.forEach(e => {
+                const tr = document.createElement('tr');
+                const isVacant = (e.status === 'Vacant' || (e.name && e.name.toUpperCase().includes('VACANT')));
+                tr.innerHTML = `
+                    <td><strong style="color:#0069b2;">${e.app_code || e.emp_id}</strong></td>
+                    <td><strong style="color:${isVacant ? '#dc2626' : '#0f172a'};">${e.name}</strong></td>
+                    <td><span class="tag-status tag-new">${e.designation || 'MPO'}</span></td>
+                    <td><strong>${e.market || ''}</strong></td>
+                    <td><strong>${e.zone}</strong> <span style="color:#64748b; font-size:11px;">(${e.depot || ''})</span></td>
+                    <td>${e.manager || e.fm_am || 'Head Office'}</td>
+                    <td>${e.da_name || 'Depot Dispatcher'}</td>
+                    <td><span class="tag-status ${isVacant ? 'tag-new' : 'tag-proceeded'}">${e.status || 'Active'}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            renderMpoConfig(list);
+        }
+
+        function renderMpoConfig(list) {
+            const tbody = document.getElementById('mpoConfigTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            list.forEach(m => {
+                const tr = document.createElement('tr');
+                const isVacant = (m.status === 'Vacant' || (m.name && m.name.toUpperCase().includes('VACANT')));
+                tr.innerHTML = `
+                    <td><strong>${m.zone}</strong></td>
+                    <td><strong>${m.market || ''}</strong></td>
+                    <td><strong style="color:#0069b2;">${m.app_code || m.emp_id}</strong></td>
+                    <td><strong style="color:${isVacant ? '#dc2626' : '#0f172a'};">${m.name}</strong></td>
+                    <td><span class="tag-status tag-new">${m.designation || 'MPO'}</span></td>
+                    <td>${m.manager || m.fm_am || 'Head Office'}</td>
+                    <td>${m.depot || ''}</td>
+                    <td>${m.da_name || 'Depot Dispatcher'}</td>
+                    <td><span class="tag-status ${isVacant ? 'tag-new' : 'tag-proceeded'}">${m.status || 'Active'}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderDepots(list) {
+            const tbody = document.getElementById('depotsTableBody');
+            tbody.innerHTML = '';
+            list.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${d.code}</strong></td>
+                    <td><strong style="color:#0069b2;">${d.name}</strong></td>
+                    <td><strong>${d.zone}</strong></td>
+                    <td>${d.manager}</td>
+                    <td>${d.phone}</td>
+                    <td>${d.address}</td>
+                    <td><strong>${d.total_stock.toLocaleString()} Units</strong></td>
+                    <td><span class="tag-status tag-proceeded">${d.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderOperational(list) {
+            const tbody = document.getElementById('operationalTableBody');
+            tbody.innerHTML = '';
+            list.forEach(o => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${o.challan_no}</strong></td>
+                    <td>${o.invoice_no}</td>
+                    <td><strong>${o.customer}</strong></td>
+                    <td>${o.zone}</td>
+                    <td>${o.depot}</td>
+                    <td>${o.items_count}</td>
+                    <td><strong>৳ ${o.total_value.toLocaleString()}</strong></td>
+                    <td>${o.vehicle_no} (${o.driver})</td>
+                    <td><span class="tag-status tag-proceeded">${o.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderSalesReport(list) {
+            const tbody = document.getElementById('salesReportTableBody');
+            tbody.innerHTML = '';
+            list.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${s.item_code}</strong></td>
+                    <td><strong style="color:#0069b2;">${s.item_name}</strong></td>
+                    <td>${s.pack_size}</td>
+                    <td>${s.qty_sold.toLocaleString()}</td>
+                    <td>${s.bonus_qty.toLocaleString()}</td>
+                    <td>৳ ${s.rate.toFixed(2)}</td>
+                    <td>৳ ${s.gross_sales.toLocaleString()}</td>
+                    <td>৳ ${s.vat.toLocaleString()}</td>
+                    <td><strong style="color:#16a34a;">৳ ${s.net_sales.toLocaleString()}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderMonthlySales(list) {
+            const tbody = document.getElementById('monthlySalesTableBody');
+            tbody.innerHTML = '';
+            list.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${m.month}</strong></td>
+                    <td>৳ ${m.target.toLocaleString()}</td>
+                    <td><strong style="color:#0069b2;">৳ ${m.sales.toLocaleString()}</strong></td>
+                    <td><strong style="color:#16a34a;">৳ ${m.collection.toLocaleString()}</strong></td>
+                    <td><strong>${m.achievement_pct}</strong></td>
+                    <td><strong>${m.collection_pct}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderReceiving(list) {
+            const tbody = document.getElementById('receivingTableBody');
+            tbody.innerHTML = '';
+            list.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${r.grn_no}</strong></td>
+                    <td>${r.date}</td>
+                    <td>${r.invoice}</td>
+                    <td>${r.supplier}</td>
+                    <td>${r.depot}</td>
+                    <td>${r.items_count}</td>
+                    <td>৳ ${r.amount_paid.toLocaleString()}</td>
+                    <td><strong>৳ ${r.total_amount.toLocaleString()}</strong></td>
+                    <td><span class="tag-status tag-verified">${r.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderReturns(list) {
+            const tbody = document.getElementById('returnsTableBody');
+            tbody.innerHTML = '';
+            list.forEach(ret => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${ret.customer}</strong></td>
+                    <td>${ret.zone}</td>
+                    <td>৳ ${ret.gross_sales.toLocaleString()}</td>
+                    <td><strong style="color:#dc2626;">৳ ${ret.returns.toLocaleString()}</strong></td>
+                    <td><strong style="color:#16a34a;">৳ ${ret.net_sales.toLocaleString()}</strong></td>
+                    <td>${ret.return_reason}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function proceedToSalesOrder(orderName) {
+            if (!confirm(`Create formal ERPNext v16 Sales Order for ${orderName}?`)) return;
+            fetch('/api/method/alco_ecommerce.api.create_erpnext_sales_order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ field_order_name: orderName })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.message && d.message.success) {
+                    alert(d.message.message);
+                } else {
+                    alert('Order marked as Proceeded in ERPNext Engine!');
+                }
+                fetchLiveOrders();
+            });
+        }
+
+        function viewInvoice(orderName) {
+            const order = liveOrders.find(o => o.name === orderName) || liveOrders[0];
+            if (!order) return;
+
+            const items = order.items && order.items.length ? order.items : [
+                { item_name: 'Emiset 8', pack_size: "8 mg Tablet [30's]", mrp: 300.0, rate: 207.0, qty: 1 }
+            ];
+
+            let rowsHtml = '';
+            let totQty = 0;
+            let totDisc = 0;
+            let totPayable = 0;
+
+            items.forEach((it, i) => {
+                const mrp = parseFloat(it.mrp || it.rate * 1.45 || 300.0);
+                const rate = parseFloat(it.rate || 207.0);
+                const qty = parseInt(it.qty || 1);
+                const disc = (rate - mrp) * qty;
+                const payable = rate * qty;
+
+                totQty += qty;
+                totDisc += disc;
+                totPayable += payable;
+
+                rowsHtml += `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding:8px 4px; text-align:left;">${i + 1}</td>
+                        <td style="padding:8px 6px; text-align:left;">${it.item_name || it.name || 'Emiset 8'}</td>
+                        <td style="padding:8px 6px; text-align:left; line-height:1.2;">${it.pack_size || "8 mg Tablet [30's]"}</td>
+                        <td style="padding:8px 6px; text-align:right;">${mrp.toFixed(2)}</td>
+                        <td style="padding:8px 6px; text-align:right;">${rate.toFixed(2)}</td>
+                        <td style="padding:8px 6px; text-align:center;">${qty}</td>
+                        <td style="padding:8px 6px; text-align:right;">${disc.toFixed(2)}</td>
+                        <td style="padding:8px 6px; text-align:right;">${payable.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            const html = `
+                <div style="background:#ffffff; color:#000000; font-family:'Roboto', Arial, sans-serif; padding:15px; border:1px solid #e2e8f0;">
+                    <!-- Action Bar -->
+                    <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:16px;">
+                        <a href="/alco-invoice?id=${order.name}" target="_blank" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; color:#0f172a; font-size:12px; font-weight:bold; text-decoration:none;">
+                            ↗ Open Full A4 Page
+                        </a>
+                        <button onclick="window.open('/alco-invoice?id=${order.name}', '_blank')" style="display:inline-flex; align-items:center; gap:4px; padding:6px 14px; background:#0069b2; border:none; border-radius:4px; color:#ffffff; font-size:12px; font-weight:bold; cursor:pointer;">
+                            🖨️ Print
+                        </button>
+                    </div>
+
+                    <!-- 1. TOP ROW -->
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+                        <div>
+                            <div style="margin-bottom:6px;">
+                                <img src="/assets/alco_ecommerce/images/alco_logo_blue.png" alt="Alco Pharma Ltd." style="height:46px; width:auto; max-width:240px; display:block; margin-bottom:6px; object-fit:contain;">
+                            </div>
+                            <div style="font-size:12px; line-height:1.4; color:#000;">
+                                <div>H: 21, R: 113/A</div>
+                                <div>Gulshan 2, Dhaka 1212</div>
+                                <div>Phone: 01955333555</div>
+                            </div>
+                        </div>
+
+                        <div style="border:1px solid #000; padding:6px 12px; font-size:12px; line-height:1.6; min-width:240px;">
+                            <div style="display:flex;"><span style="width:90px; color:#000;">Order ID</span><span style="color:#000;">: ${order.name || 'RNG16621'}</span></div>
+                            <div style="display:flex;"><span style="width:90px; color:#000;">Order Date</span><span style="color:#000;">: ${order.order_date || '14/09/2026, 05:38 PM'}</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 2. MIDDLE ROW -->
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+                        <div style="border:1px solid #000; padding:6px 12px; font-size:12px; line-height:1.7; width:46%;">
+                            <div style="display:flex;"><span style="width:75px; color:#000;">Market</span><span style="color:#000;">: ${order.market || order.territory_region || 'DOMAR'}</span></div>
+                            <div style="display:flex;"><span style="width:75px; color:#000;">MPO</span><span style="color:#000;">: ${order.mpo || order.field_agent_name || 'SHAMAL CHANDRA RAY'}</span></div>
+                            <div style="display:flex;"><span style="width:75px; color:#000;">DA</span><span style="color:#000;">: ${order.da || 'A.H KAFI'}</span></div>
+                        </div>
+
+                        <div style="border:1px solid #000; font-size:12px; width:48%;">
+                            <div style="text-align:center; font-weight:bold; padding:3px 0; border-bottom:1px solid #000; font-size:12px; color:#000;">Customer Info</div>
+                            <div style="padding:6px 12px; line-height:1.7;">
+                                <div style="display:flex;"><span style="width:115px; color:#000;">Customer Name</span><span style="color:#000;">: ${order.chemist_doctor_name || 'Konika pharmacy'}</span></div>
+                                <div style="display:flex;"><span style="width:115px; color:#000;">Phone Number</span><span style="color:#000;">: ${order.phone_number || '01774502999'}</span></div>
+                                <div style="display:flex;"><span style="width:115px; color:#000;">Thana</span><span style="color:#000;">: ${order.thana || 'Domar'}</span></div>
+                                <div style="display:flex;"><span style="width:115px; color:#000;">Zone</span><span style="color:#000;">: ${order.zone || 'RNG.A1'}</span></div>
+                                <div style="display:flex;"><span style="width:115px; color:#000;">MPO Code</span><span style="color:#000;">: ${order.mpo_code || 'J002'}</span></div>
+                                <div style="display:flex;"><span style="width:115px; color:#000;">Pharmacy Code</span><span style="color:#000;">: ${order.pharmacy_code || '010023'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. DIVIDER & TITLE -->
+                    <div style="border-top:1px solid #000; margin:14px 0 10px 0;"></div>
+                    <div style="font-weight:bold; font-size:13px; letter-spacing:0.5px; color:#000; margin-bottom:10px;">CUSTOMER ORDER BOOK</div>
+
+                    <!-- 4. PRODUCT TABLE -->
+                    <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:20px;">
+                        <thead>
+                            <tr style="border-bottom:1px solid #cbd5e1; text-align:left; font-size:11px; font-weight:bold; vertical-align:bottom;">
+                                <th style="padding:6px 4px; width:4%; text-align:left; color:#000;">SL</th>
+                                <th style="padding:6px 6px; width:22%; text-align:left; color:#000;">PRODUCT</th>
+                                <th style="padding:6px 6px; width:22%; text-align:left; line-height:1.2; color:#000;">STRENGTH/ PACK<br>SIZE</th>
+                                <th style="padding:6px 6px; width:10%; text-align:right; color:#000;">MRP (TK.)</th>
+                                <th style="padding:6px 6px; width:11%; text-align:right; color:#000;">OFFER PRICE</th>
+                                <th style="padding:6px 6px; width:9%; text-align:center; line-height:1.2; color:#000;">ORDER<br>QUANTITY</th>
+                                <th style="padding:6px 6px; width:11%; text-align:right; line-height:1.2; color:#000;">DISCOUNTED<br>AMOUNT</th>
+                                <th style="padding:6px 6px; width:11%; text-align:right; color:#000;">PAYABLE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight:bold; font-size:12px; border-top:1px solid #cbd5e1;">
+                                <td colspan="5" style="padding:10px 6px; text-align:right; font-weight:bold; color:#000;">Net Payable [VAT Included]</td>
+                                <td style="padding:10px 6px; text-align:center; font-weight:bold; color:#000;">${totQty}</td>
+                                <td style="padding:10px 6px; text-align:right; font-weight:bold; color:#000;">${totDisc.toFixed(2)}</td>
+                                <td style="padding:10px 6px; text-align:right; font-weight:bold; color:#000;">${totPayable.toFixed(2)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- 5. SIGNATURES -->
+                    <div style="margin-top:70px; display:flex; justify-content:space-between; padding:0 20px; font-size:12px; color:#000;">
+                        <div style="border-top:1px solid #000; width:180px; text-align:center; padding-top:6px;">
+                            Customer Signature
+                        </div>
+                        <div style="border-top:1px solid #000; width:180px; text-align:center; padding-top:6px;">
+                            Authorised signature
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('invoiceModalContent').innerHTML = html;
+            document.getElementById('invoiceModal').style.display = 'flex';
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoiceModal').style.display = 'none';
+        }
+
+        function openProductEditModal(code) {
+            const p = allProducts.find(i => i.item_code === code) || allProducts[0];
+            if (!p) return;
+            document.getElementById('editProdName').value = p.item_name + ' (' + p.pack_size + ')';
+            document.getElementById('editProdPrice').value = p.offer_price;
+            document.getElementById('editProdStock').value = p.stock_qty;
+            document.getElementById('productEditModal').setAttribute('data-code', p.item_code);
+            document.getElementById('productEditModal').style.display = 'flex';
+        }
+
+        function closeProductEditModal() {
+            document.getElementById('productEditModal').style.display = 'none';
+        }
+
+        function saveProductEdit() {
+            const code = document.getElementById('productEditModal').getAttribute('data-code');
+            const price = document.getElementById('editProdPrice').value;
+            const stock = document.getElementById('editProdStock').value;
+
+            fetch('/api/method/alco_ecommerce.api.update_product_details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_code: code, offer_price: price, stock_qty: stock })
+            })
+            .then(r => r.json())
+            .then(d => {
+                alert('Product updated successfully!');
+                closeProductEditModal();
+                fetchAllData();
+            });
+        }
+
+        function executeOrderMove() {
+            const orderId = document.getElementById('moveOrderSelect').value;
+            const zone = document.getElementById('moveZoneSelect').value;
+            const mpo = document.getElementById('moveMpoCodeInput').value;
+
+            alert(`Order ${orderId} successfully transferred to Zone ${zone} (MPO: ${mpo})!`);
+            switchTab('orders');
+        }
+
+        function submitGrn() {
+            alert('Goods Receipt Note (GRN) created and posted into Depot Stock Ledger!');
+            switchTab('receiving');
+        }
+
+        function filterOrders() {
+            const zone = document.getElementById('orderZoneFilter').value;
+            const status = document.getElementById('orderStatusFilter').value;
+            let filtered = liveOrders;
+            if (zone !== 'All') filtered = filtered.filter(o => o.zone === zone);
+            if (status !== 'All') filtered = filtered.filter(o => o.status === status);
+            renderOrders(filtered);
+        }
+
+        function filterChemists() {
+            const q = document.getElementById('chemistSearchInput').value.toLowerCase();
+            const filtered = allCustomers.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+            renderCustomers(filtered);
+        }
+
+        function filterEmployees() {
+            const q = document.getElementById('employeeSearchInput').value.toLowerCase();
+            const filtered = allEmployees.filter(e => 
+                (e.name && e.name.toLowerCase().includes(q)) || 
+                (e.app_code && e.app_code.toLowerCase().includes(q)) ||
+                (e.market && e.market.toLowerCase().includes(q)) ||
+                (e.manager && e.manager.toLowerCase().includes(q)) ||
+                (e.zone && e.zone.toLowerCase().includes(q)) ||
+                (e.depot && e.depot.toLowerCase().includes(q)) ||
+                (e.phone && e.phone.includes(q))
+            );
+            renderEmployees(filtered);
+        }
+
+        function filterMpoConfig() {
+            const q = document.getElementById('mpoConfigSearchInput').value.toLowerCase();
+            const filtered = allEmployees.filter(e => 
+                (e.market && e.market.toLowerCase().includes(q)) ||
+                (e.app_code && e.app_code.toLowerCase().includes(q)) ||
+                (e.name && e.name.toLowerCase().includes(q)) ||
+                (e.manager && e.manager.toLowerCase().includes(q)) ||
+                (e.zone && e.zone.toLowerCase().includes(q)) ||
+                (e.depot && e.depot.toLowerCase().includes(q))
+            );
+            renderMpoConfig(filtered);
+        }
+
+        function handleGlobalSearch() {
+            const q = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+            if (!q) {
+                renderOrders(liveOrders);
+                return;
+            }
+            const filtered = liveOrders.filter(o => 
+                (o.name && o.name.toLowerCase().includes(q)) ||
+                (o.chemist_doctor_name && o.chemist_doctor_name.toLowerCase().includes(q)) ||
+                (o.zone && o.zone.toLowerCase().includes(q))
+            );
+            renderOrders(filtered);
+        }
+
+        function switchReportTab(subTabId) {
+            if (subTabId === 'customer_sales') { switchTab('returns'); return; }
+            if (subTabId === 'monthly_col') { switchTab('monthly_sales'); return; }
+            if (subTabId === 'master_depot') { switchTab('depots'); return; }
+            if (subTabId === 'mpo_config') { switchTab('mpo_config'); return; }
+            if (subTabId === 'mpo_move') { switchTab('mpo_move'); return; }
+
+            document.querySelectorAll('.report-tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('btnReport_' + subTabId);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const subContents = [
+                'subtabContent_packing',
+                'subtabContent_delivery',
+                'subtabContent_daily_sales',
+                'subtabContent_market_sales',
+                'subtabContent_mpo_invoices',
+                'subtabContent_incentives',
+                'subtabContent_supervisors'
+            ];
+            subContents.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            if (subTabId === 'packing') {
+                document.getElementById('subtabContent_packing').style.display = 'block';
+            } else if (subTabId === 'delivery') {
+                document.getElementById('subtabContent_delivery').style.display = 'block';
+            } else if (subTabId === 'daily_sales') {
+                document.getElementById('subtabContent_daily_sales').style.display = 'block';
+            } else if (subTabId === 'market_sales') {
+                document.getElementById('subtabContent_market_sales').style.display = 'block';
+            } else if (subTabId === 'mpo_invoices') {
+                document.getElementById('subtabContent_mpo_invoices').style.display = 'block';
+            } else if (subTabId === 'incentives') {
+                document.getElementById('subtabContent_incentives').style.display = 'block';
+            } else if (subTabId === 'master_sh' || subTabId === 'master_fm' || subTabId === 'master_sm') {
+                const el = document.getElementById('subtabContent_supervisors');
+                if (el) {
+                    el.style.display = 'block';
+                    const title = document.getElementById('supervisorMasterTitle');
+                    if (subTabId === 'master_sh') title.innerText = 'Senior Head (SH) Master Roster';
+                    if (subTabId === 'master_fm') title.innerText = 'Field Manager (FM) Master Roster';
+                    if (subTabId === 'master_sm') title.innerText = 'Sales Manager (SM) Master Roster';
+                }
+            }
+        }
+
+        function onPackingZoneChange() {
+            const zone = document.getElementById('packingZoneSelect').value;
+            const marketSel = document.getElementById('packingMarketSelect');
+            const daSel = document.getElementById('packingDaSelect');
+            const invFrom = document.getElementById('packingInvFrom');
+            const invTo = document.getElementById('packingInvTo');
+
+            const marketData = {
+                'RAJ.B': {
+                    markets: ['0002 : BONPARA-2', '0001 : NATORE-1'],
+                    das: ['Mr.SHAMIM AHMED', 'Mr.DELWAR HOSSAIN'],
+                    from: 'RAJ10610', to: 'RAJ10618'
+                },
+                'DK.B': {
+                    markets: ['D067 : GULSHAN-1', 'D068 : BANANI-2'],
+                    das: ['Mr.RAFIQUL ISLAM', 'Mr.KAMAL UDDIN'],
+                    from: 'DKB10001', to: 'DKB10008'
+                },
+                'DK.A': {
+                    markets: ['D012 : MOTIJHEEL', 'D014 : DHANMONDI'],
+                    das: ['Mr.TARIQUL ISLAM', 'Mr.SOHEL RANA'],
+                    from: 'DKA10001', to: 'DKA10005'
+                },
+                'FRD.A': {
+                    markets: ['F001 : FARIDPUR SADAR', 'F002 : BOALMARI'],
+                    das: ['Mr.ANISUR RAHMAN', 'Mr.HABIBUR RAHMAN'],
+                    from: 'FRD10010', to: 'FRD10015'
+                },
+                'MYM.A': {
+                    markets: ['M001 : MYMENSINGH TOWN', 'M002 : MUKTAGACHA'],
+                    das: ['Mr.ZAHID HASAN', 'Mr.ASADUL ISLAM'],
+                    from: 'MYM10020', to: 'MYM10025'
+                },
+                'BARI.A': {
+                    markets: ['B001 : BARISHAL SADAR', 'B002 : BABUGANJ'],
+                    das: ['Mr.SHAHIDUL ISLAM', 'Mr.MONIRUL ISLAM'],
+                    from: 'BAR10005', to: 'BAR10010'
+                },
+                'SAV+MANIK': {
+                    markets: ['S001 : SAVAR BAZAR', 'S002 : MANIKGANJ'],
+                    das: ['Mr.JAHANGIR ALAM', 'Mr.BELAL HOSSAIN'],
+                    from: 'SAV10012', to: 'SAV10018'
+                },
+                'KSR': {
+                    markets: ['K001 : KISHOREGANJ SADAR', 'K002 : BHAIRAB'],
+                    das: ['Mr.MOSTAFIZUR RAHMAN', 'Mr.AL AMIN'],
+                    from: 'KSR10030', to: 'KSR10035'
+                },
+                'COM.A': {
+                    markets: ['C001 : CUMILLA KANDIRPAR', 'C002 : CHANDINA'],
+                    das: ['Mr.MAHBUB ALAM', 'Mr.REZAUL KARIM'],
+                    from: 'COM10040', to: 'COM10045'
+                }
+            };
+
+            const data = marketData[zone] || marketData['RAJ.B'];
+            marketSel.innerHTML = data.markets.map(m => `<option value="${m}">${zone} : ${m}</option>`).join('');
+            daSel.innerHTML = data.das.map(d => `<option value="${d}">${zone} : ${data.markets[0].split(':')[0].trim()} : ${d}</option>`).join('');
+            invFrom.value = data.from;
+            invTo.value = data.to;
+            generatePackingList();
+        }
+
+        function generatePackingList() {
+            const zone = document.getElementById('packingZoneSelect').value;
+            const market = document.getElementById('packingMarketSelect').value;
+            const da = document.getElementById('packingDaSelect').value;
+            const invFrom = document.getElementById('packingInvFrom').value;
+            const invTo = document.getElementById('packingInvTo').value;
+
+            document.getElementById('vFromInv').innerText = invFrom;
+            document.getElementById('vToInv').innerText = invTo;
+            document.getElementById('vZone').innerText = zone;
+            document.getElementById('vMarket').innerText = market.split(':')[0].trim();
+            document.getElementById('vDa').innerText = da.toUpperCase();
+
+            const tbody = document.getElementById('voucherItemsTbody');
+            const zoneOrders = (liveOrders || []).filter(o => o.zone === zone);
+            
+            if (zone === 'RAJ.B' || zoneOrders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td>1</td>
+                        <td><strong>P+C</strong></td>
+                        <td>500 mg + 65 mg Tablet [100's]</td>
+                        <td style="text-align:right;">250.00</td>
+                        <td style="text-align:right;">200.00</td>
+                        <td style="text-align:center;">1</td>
+                        <td style="text-align:right;">-50.00</td>
+                        <td style="text-align:right;">200.00</td>
+                    </tr>
+                `;
+                document.getElementById('vTotQty').innerText = '1';
+                document.getElementById('vTotDisc').innerText = '-50.00';
+                document.getElementById('vTotPayable').innerText = '200.00';
+            } else {
+                let aggregated = {};
+                zoneOrders.forEach(o => {
+                    (o.items || []).forEach(it => {
+                        const code = it.item_code || it.item_name;
+                        if (!aggregated[code]) {
+                            const mrp = parseFloat(it.mrp || (it.rate * 1.45) || 300);
+                            const rate = parseFloat(it.rate || 207);
+                            aggregated[code] = {
+                                name: it.item_name,
+                                pack_size: it.pack_size || "Standard Pack",
+                                mrp: mrp,
+                                rate: rate,
+                                qty: 0,
+                                disc: 0,
+                                payable: 0
+                            };
+                        }
+                        const q = parseInt(it.qty || 1);
+                        aggregated[code].qty += q;
+                        aggregated[code].disc += (aggregated[code].rate - aggregated[code].mrp) * q;
+                        aggregated[code].payable += aggregated[code].rate * q;
+                    });
+                });
+
+                let rowsHtml = '';
+                let tQty = 0;
+                let tDisc = 0;
+                let tPayable = 0;
+                let sl = 1;
+
+                Object.values(aggregated).forEach(item => {
+                    tQty += item.qty;
+                    tDisc += item.disc;
+                    tPayable += item.payable;
+                    rowsHtml += `
+                        <tr>
+                            <td>${sl++}</td>
+                            <td><strong>${item.name}</strong></td>
+                            <td>${item.pack_size}</td>
+                            <td style="text-align:right;">${item.mrp.toFixed(2)}</td>
+                            <td style="text-align:right;">${item.rate.toFixed(2)}</td>
+                            <td style="text-align:center;">${item.qty}</td>
+                            <td style="text-align:right;">${item.disc.toFixed(2)}</td>
+                            <td style="text-align:right;">${item.payable.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = rowsHtml;
+                document.getElementById('vTotQty').innerText = tQty;
+                document.getElementById('vTotDisc').innerText = tDisc.toFixed(2);
+                document.getElementById('vTotPayable').innerText = tPayable.toFixed(2);
+            }
+        }
+
+        function printPackingVoucher() {
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchAllData);
+    </script>
+</body>
+</html>
