@@ -254,14 +254,25 @@ def get_pharma_products() -> list[dict]:
             frappe.throw(_("No active products found in the database catalog."), title=_("Catalog Empty"))
 
         # Fetch canonical prices directly from tabItem Price (Single Source of Truth)
-        prices = frappe.db.get_all("Item Price", filters={"uom": "Box"}, fields=["item_code", "price_list", "price_list_rate"])
+        prices = frappe.db.get_all(
+            "Item Price",
+            filters={"currency": "BDT", "uom": "Box"},
+            fields=["item_code", "price_list", "price_list_rate"]
+        )
         mrp_map = {p.item_code: p.price_list_rate for p in prices if p.price_list == "MRP"}
         selling_map = {p.item_code: p.price_list_rate for p in prices if p.price_list == "Standard Selling"}
+
+        # Live stock balance from canonical ERPNext tabBin
+        bins = frappe.db.get_all("Bin", fields=["item_code", "actual_qty"])
+        stock_map = {}
+        for b in bins:
+            stock_map[b.item_code] = stock_map.get(b.item_code, 0.0) + float(b.actual_qty or 0.0)
 
         barcode_rows = frappe.db.get_all("Item Barcode", fields=["parent", "barcode"])
         barcode_map = {b.parent: b.barcode for b in barcode_rows}
 
         featured_codes = {"ALO-PNC-500", "ALO-VIE-20", "ALO-XCT-100"}
+        fallback_img = "/assets/alco_ecommerce/images/alco-ecommerce-logo.svg"
 
         products = []
         for r in db_items:
@@ -273,21 +284,21 @@ def get_pharma_products() -> list[dict]:
                 "item_name": r.get("item_name") or "",
                 "generic_name": r.get("generic_name") or "",
                 "category": "Featured" if code in featured_codes else "General Item",
-                "pack_size": r.get("pack_size") or r.get("sales_uom") or "Box",
+                "pack_size": r.get("pack_size") or r.get("sales_uom") or r.get("stock_uom") or "Box",
                 "mrp": mrp_rate,
                 "offer_price": sell_rate,
                 "rate": sell_rate,
                 "cost": float(r.get("cost") or 0.0),
                 "vat_percentage": float(r.get("vat_percentage") or 15.0),
-                "stock_qty": 50000,
+                "stock_qty": stock_map.get(code, 0.0),
                 "upc": barcode_map.get(code, ""),
-                "unit": r.get("sales_uom") or "Box",
+                "unit": r.get("sales_uom") or r.get("stock_uom") or "Box",
                 "theme_color": r.get("theme_color") or "#0284c7",
                 "gradient": r.get("gradient") or "",
                 "banner_tag": r.get("banner_tag") or "",
                 "banner_sub": r.get("banner_sub") or "",
-                "image_url": r.get("image_url") or "",
-                "description": r.get("description") or ""
+                "image_url": r.get("image_url") or fallback_img,
+                "description": r.get("description") or f"{r.get('item_name', '')} - Alco Pharma"
             }
             products.append(p)
         return products
@@ -406,17 +417,33 @@ def submit_field_order(
 
 @frappe.whitelist()
 def create_erpnext_sales_order(field_order_name: str) -> dict:
-    """Converts an Alco Field Order into a formal ERPNext v16 Sales Order"""
+    """Converts an Alco Field Order into a formal ERPNext v16 Sales Order with strict concurrency-safe idempotency."""
     if not field_order_name:
         frappe.throw(_("Field Order Name is required."))
-        
-    field_order = frappe.get_doc("Alco Field Order", field_order_name)
-    if field_order.get("erpnext_sales_order"):
+
+    # 1. Acquire ACID row-level lock in MariaDB to serialize concurrent requests and eliminate race conditions
+    locked_fo = frappe.db.sql(
+        "SELECT name, erpnext_sales_order, docstatus FROM `tabAlco Field Order` WHERE name = %s FOR UPDATE",
+        (field_order_name,),
+        as_dict=True
+    )
+    if not locked_fo:
+        frappe.throw(_("Field Order {0} not found.").format(field_order_name))
+
+    fo_meta = locked_fo[0]
+    if fo_meta.docstatus != 1:
+        frappe.throw(_("Field Order {0} must be in Submitted state to convert to Sales Order.").format(field_order_name))
+
+    # 2. Concurrency-safe duplicate conversion guard
+    if fo_meta.erpnext_sales_order:
         return {
             "success": True,
-            "message": _("Sales Order {0} already exists.").format(field_order.erpnext_sales_order),
-            "sales_order": field_order.erpnext_sales_order
+            "is_duplicate": True,
+            "sales_order": fo_meta.erpnext_sales_order,
+            "message": _("Sales Order {0} already exists for this Field Order.").format(fo_meta.erpnext_sales_order)
         }
+
+    field_order = frappe.get_doc("Alco Field Order", field_order_name)
 
     company = frappe.db.get_single_value("Global Defaults", "default_company")
     if not company:
@@ -441,30 +468,60 @@ def create_erpnext_sales_order(field_order_name: str) -> dict:
     so.company = company
     so.transaction_date = field_order.order_date or frappe.utils.today()
     so.delivery_date = frappe.utils.add_days(so.transaction_date, 2)
-    so.remarks = f"Created from Alco Field Order: {field_order.name}. Agent: {field_order.field_agent_name}"
+    so.currency = "BDT"
+    so.selling_price_list = "Standard Selling"
+    so.po_no = field_order.name
+
+    default_wh = frappe.db.get_value(
+        "Warehouse",
+        {"company": company, "warehouse_name": ["like", "%Finished Goods%"], "is_group": 0},
+        "name"
+    ) or frappe.db.get_value(
+        "Warehouse",
+        {"company": company, "is_group": 0},
+        "name"
+    )
+    if default_wh:
+        so.set_warehouse = default_wh
 
     for row in field_order.items:
-        item_code = row.item_code
-        if not frappe.db.exists("Item", item_code):
-            item_doc = frappe.new_doc("Item")
-            item_doc.item_code = item_code
-            item_doc.item_name = row.item_name
-            item_doc.item_group = "Products"
-            item_doc.stock_uom = "Nos"
-            item_doc.is_sales_item = 1
-            item_doc.standard_rate = row.rate
-            item_doc.insert(ignore_permissions=True)
-            item_code = item_doc.name
+        if not frappe.db.exists("Item", row.item_code):
+            frappe.throw(_("Item {0} does not exist in master catalog.").format(row.item_code))
 
-        so.append("items", {
-            "item_code": item_code,
-            "item_name": row.item_name,
-            "qty": row.qty,
-            "rate": row.rate,
+        item_doc = frappe.get_doc("Item", row.item_code)
+        if item_doc.disabled or not item_doc.is_sales_item:
+            frappe.throw(_("Item {0} is disabled or not available for sales.").format(row.item_code))
+
+        item_uoms = [u.uom for u in item_doc.uoms]
+        target_uom = row.uom if row.uom in item_uoms else ("Box" if "Box" in item_uoms else item_doc.stock_uom)
+
+        # Check current live master price from tabItem Price at conversion time
+        current_live_price = frappe.db.get_value(
+            "Item Price",
+            {"item_code": item_doc.name, "price_list": "Standard Selling", "currency": "BDT"},
+            "price_list_rate"
+        )
+
+        item_payload = {
+            "item_code": item_doc.name,
+            "item_name": item_doc.item_name,
+            "qty": float(row.qty),
+            "rate": float(row.rate),
+            "price_list_rate": float(current_live_price or row.rate),
             "delivery_date": so.delivery_date,
-            "uom": "Nos",
-            "conversion_factor": 1.0
-        })
+            "uom": target_uom
+        }
+
+        if item_doc.is_stock_item:
+            row_wh = (
+                frappe.db.get_value("Item Default", {"parent": item_doc.name, "company": company}, "default_warehouse")
+                or frappe.db.get_value("Bin", {"item_code": item_doc.name, "warehouse": ["like", f"%{company}%"]}, "warehouse")
+                or default_wh
+            )
+            if row_wh:
+                item_payload["warehouse"] = row_wh
+
+        so.append("items", item_payload)
 
     so.insert(ignore_permissions=True)
     so.submit()
@@ -477,6 +534,7 @@ def create_erpnext_sales_order(field_order_name: str) -> dict:
 
     return {
         "success": True,
+        "is_duplicate": False,
         "message": _("ERPNext Sales Order {0} created and submitted successfully!").format(so.name),
         "sales_order": so.name
     }
@@ -892,15 +950,30 @@ def get_customer_sales_return() -> list[dict]:
     ]
 
 @frappe.whitelist()
-def update_product_details(item_code: str, offer_price: float, stock_qty: float) -> dict:
-    """Update product price or stock in catalog"""
-    for p in ALCO_CATALOG:
-        if p["item_code"] == item_code:
-            p["offer_price"] = float(offer_price)
-            p["rate"] = float(offer_price)
-            p["stock_qty"] = float(stock_qty)
-            return {"success": True, "message": f"Product {item_code} updated successfully!"}
-    return {"success": False, "message": "Product not found."}
+def update_product_details(item_code: str, offer_price: float, stock_qty: float = None) -> dict:
+    """Updates product price in canonical ERPNext tabItem Price"""
+    if not item_code:
+        frappe.throw(_("Item Code is required."))
+
+    price_name = frappe.db.get_value(
+        "Item Price",
+        {"item_code": item_code, "price_list": "Standard Selling", "currency": "BDT"},
+        "name"
+    )
+    if price_name:
+        frappe.db.set_value("Item Price", price_name, "price_list_rate", float(offer_price))
+    else:
+        doc = frappe.new_doc("Item Price")
+        doc.item_code = item_code
+        doc.price_list = "Standard Selling"
+        doc.price_list_rate = float(offer_price)
+        doc.currency = "BDT"
+        doc.uom = "Box"
+        doc.insert(ignore_permissions=True)
+
+    frappe.clear_cache(doctype="Item Price")
+    frappe.db.commit()
+    return {"success": True, "message": f"Product {item_code} price updated in ERPNext to {offer_price} BDT."}
 
 def seed_all_demo_data():
     """Initializes realistic data for Alco Ecommerce"""

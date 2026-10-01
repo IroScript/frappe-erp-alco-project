@@ -28,7 +28,7 @@ add_to_apps_screen = [
 
 # Home page
 # ----------
-# home_page = "alco-order"
+home_page = "alco-order"
 
 # Website User Home Page
 # ----------------------
