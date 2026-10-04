@@ -1,10 +1,22 @@
 import json
+import os
 import re
 import frappe
 from frappe import _
 from frappe.query_builder import DocType
+from frappe.rate_limiter import rate_limit
 import frappe.query_builder.functions as fn
 from alco_ecommerce.dynamic_gradient import extract_dynamic_gradient
+
+# Roles allowed to use the back-office (alco-admin) endpoints. Uses core ERPNext roles, no new role model.
+ADMIN_ROLES = ("System Manager", "Sales Manager", "Sales User")
+
+
+def _require_admin() -> None:
+    """Back-office endpoints: logged-in user with an ERPNext sales/system role (raises frappe.PermissionError)."""
+    if frappe.session.user == "Guest":
+        frappe.throw(_("Please log in to access the Alco back office."), frappe.PermissionError)
+    frappe.only_for(ADMIN_ROLES)
 
 # -------------------------------------------------------------------------
 # 1. AUTHENTIC ALCO PHARMA PRODUCT MASTER CATALOG
@@ -218,7 +230,7 @@ ALCO_DEPOTS = [
     {"code": "SYL", "name": "Sylhet Depot", "zone": "SYL.A", "manager": "Syed Farhad Ahmed", "phone": "01955333561", "address": "Subidbazar, Sylhet", "total_stock": 162100, "status": "Active"}
 ]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def get_pharma_products() -> list[dict]:
     """Fetch available Alco Pharma product catalog from MariaDB with PyPika Query Builder (frappe.qb).
     Item Price (tabItem Price) serves as the canonical Single Source of Truth for MRP and Selling rates.
@@ -306,9 +318,10 @@ def get_pharma_products() -> list[dict]:
         frappe.log_error(f"Database error in get_pharma_products: {e}", "Product Catalog API")
         frappe.throw(_("Database service temporarily unavailable. Live catalog could not be loaded."), title=_("Catalog Unavailable"))
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_image_gradient(image_url: str) -> dict:
     """Dynamically extracts dominant color breakdown and CSS gradient for any product image URL"""
+    _require_admin()  # fetches arbitrary URLs / paths -> never exposed to guests (SSRF)
     grad, prim, sec, breakdown = extract_dynamic_gradient(image_url)
     return {
         "gradient": grad,
@@ -317,7 +330,8 @@ def get_image_gradient(image_url: str) -> dict:
         "color_breakdown": breakdown
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+@rate_limit(limit=30, seconds=60, methods="POST")
 def submit_field_order(
     chemist_doctor_name: str,
     field_agent_name: str = "Online Customer",
@@ -415,9 +429,10 @@ def submit_field_order(
         "message": _("Field Order {0} created and submitted successfully!").format(doc.name)
     }
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def create_erpnext_sales_order(field_order_name: str) -> dict:
     """Converts an Alco Field Order into a formal ERPNext v16 Sales Order with strict concurrency-safe idempotency."""
+    _require_admin()
     if not field_order_name:
         frappe.throw(_("Field Order Name is required."))
 
@@ -451,17 +466,14 @@ def create_erpnext_sales_order(field_order_name: str) -> dict:
     if not company:
         frappe.throw(_("Please create at least one Company in ERPNext first."))
 
-    customer_name = field_order.chemist_doctor_name.strip()
-    if not frappe.db.exists("Customer", customer_name):
-        customer_doc = frappe.new_doc("Customer")
-        customer_doc.customer_name = customer_name
-        customer_doc.customer_type = "Company"
-        customer_doc.customer_group = "Commercial"
-        customer_doc.territory = "All Territories"
-        if field_order.phone_number:
-            customer_doc.mobile_no = field_order.phone_number
-        customer_doc.insert(ignore_permissions=True)
-        customer_name = customer_doc.name
+    # Core ERPNext Customer: prefer the record registered from the storefront (matched by mobile number)
+    customer_name = _upsert_customer(
+        shop_name=field_order.chemist_doctor_name.strip(),
+        phone=field_order.phone_number,
+        zone=field_order.zone,
+        mpo_code=field_order.mpo_code,
+        update_existing=False,
+    )
 
     so = frappe.new_doc("Sales Order")
     so.customer = customer_name
@@ -539,26 +551,38 @@ def create_erpnext_sales_order(field_order_name: str) -> dict:
         "sales_order": so.name
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["POST"])
 def update_order_status(order_name: str, status: str) -> dict:
     """Updates the status of an Alco Field Order (e.g. Collected, Rejected, Cancelled, Proceeded)"""
+    _require_admin()
     if not order_name or not status:
         frappe.throw(_("Order name and status are required."))
-    
+
+    allowed = [s for s in (frappe.get_meta("Alco Field Order").get_options("status") or "").split("\n") if s]
+    if status not in allowed:
+        frappe.throw(_("Invalid status '{0}'. Allowed: {1}").format(status, ", ".join(allowed)))
+
     order = frappe.get_doc("Alco Field Order", order_name)
-    order.status = status
-    if status == "Collected":
-        order.due_amount = 0.0
-    order.save(ignore_permissions=True)
-    frappe.db.commit()
+
+    if status == "Cancelled" and order.docstatus == 1:
+        if order.erpnext_sales_order and frappe.db.get_value("Sales Order", order.erpnext_sales_order, "docstatus") == 1:
+            frappe.throw(_("Cancel ERPNext Sales Order {0} first.").format(order.erpnext_sales_order))
+        order.cancel()  # core submit/cancel lifecycle (docstatus 2)
+        order.db_set("status", "Cancelled")
+    else:
+        # Submitted documents: status fields are updated with db_set (no after-submit validation of other fields)
+        values = {"status": status}
+        if status == "Collected":
+            values["due_amount"] = 0.0
+        order.db_set(values)
     return {
         "success": True,
         "order_name": order.name,
-        "status": order.status,
+        "status": status,
         "message": _("Field Order {0} updated to {1} successfully!").format(order.name, status)
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def get_order_details(order_name: str) -> dict:
     """Fetch complete field order details including line items for confirmation and receipts"""
     if not order_name:
@@ -595,9 +619,30 @@ def get_order_details(order_name: str) -> dict:
         ]
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
+def get_field_orders(order_name: str = None, limit: int = 100) -> list[dict]:
+    """Back office: field orders with line items (used by alco-invoice.html for invoice printing)."""
+    _require_admin()
+    if order_name:
+        names = [order_name] if frappe.db.exists("Alco Field Order", order_name) else []
+    else:
+        names = frappe.get_list(
+            "Alco Field Order", order_by="creation desc", limit_page_length=min(int(limit or 100), 500), pluck="name"
+        )
+    return [get_order_details(n) for n in names]
+
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def get_customer_order_history(phone_number: str = None, chemist_name: str = None, limit: int = 20) -> list[dict]:
     """Fetch past field order history for a chemist/customer by phone number or name"""
+    clean_phone = re.sub(r"[^\d]", "", (phone_number or "").strip())
+    by_phone = len(clean_phone) >= 10
+    if not by_phone:
+        # Guests may only look up their own history by mobile number (never "all orders");
+        # name search / unfiltered listing is back-office only.
+        if frappe.session.user == "Guest":
+            return []
+        _require_admin()
+
     FieldOrder = frappe.qb.DocType("Alco Field Order")
     query = (
         frappe.qb.from_(FieldOrder)
@@ -616,22 +661,21 @@ def get_customer_order_history(phone_number: str = None, chemist_name: str = Non
             FieldOrder.erpnext_sales_order
         )
         .orderby(FieldOrder.creation, order=frappe.qb.desc)
-        .limit(int(limit))
+        .limit(max(1, min(int(limit or 20), 50)))
     )
     
-    if phone_number and phone_number.strip():
-        clean_phone = re.sub(r"[^\d]", "", phone_number.strip())
-        if len(clean_phone) >= 10:
-            query = query.where(FieldOrder.phone_number.like(f"%{clean_phone[-10:]}%"))
+    if by_phone:
+        query = query.where(FieldOrder.phone_number.like(f"%{clean_phone[-10:]}%"))
     elif chemist_name and chemist_name.strip():
         query = query.where(FieldOrder.chemist_doctor_name.like(f"%{chemist_name.strip()}%"))
         
     orders = query.run(as_dict=True)
     return orders
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_orders_list(zone: str = None, status: str = None, search: str = None) -> list[dict]:
     """Fetch order rows matching Orders.png table view with PyPika query builder"""
+    _require_admin()
     FieldOrder = DocType("Alco Field Order")
     query = (
         frappe.qb.from_(FieldOrder)
@@ -671,9 +715,10 @@ def get_orders_list(zone: str = None, status: str = None, search: str = None) ->
 
     return orders
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_dashboard_summary() -> dict:
     """Fetch analytics overview for Alco Ecommerce dashboard"""
+    _require_admin()
     FieldOrder = DocType("Alco Field Order")
     
     total_orders = frappe.db.count("Alco Field Order")
@@ -691,7 +736,7 @@ def get_dashboard_summary() -> dict:
         .where(FieldOrder.docstatus == 1)
         .run(as_dict=True)
     )
-    total_vat = float(total_vat_result[0].get("total_vat") or 0.0) if total_vat_result else (total_revenue * 0.15)
+    total_vat = float(total_vat_result[0].get("total_vat") or 0.0) if total_vat_result else 0.0
 
     recent_orders = (
         frappe.qb.from_(FieldOrder)
@@ -710,44 +755,38 @@ def get_dashboard_summary() -> dict:
         .run(as_dict=True)
     )
 
+    # Live numbers from core ERPNext masters (no hardcoded fallbacks)
     return {
-        "total_orders": total_orders or 15,
-        "total_revenue": total_revenue or 185420.0,
-        "total_vat": total_vat or 27813.0,
-        "total_chemists": 1000,
-        "total_field_forces": 787,
-        "total_depots": 11,
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+        "total_vat": total_vat,
+        "total_chemists": frappe.db.count("Customer", {"disabled": 0}),
+        "total_field_forces": len(_load_master_data().get("field_forces", [])),
+        "total_depots": len(ALCO_DEPOTS),
         "recent_orders": recent_orders,
-        "total_products": len(ALCO_CATALOG)
+        "total_products": frappe.db.count("Item", {"disabled": 0, "is_sales_item": 1}),
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_depots_list() -> list[dict]:
     """Returns all 11 Alco Pharma Depots"""
+    _require_admin()
     return ALCO_DEPOTS
 
-@frappe.whitelist(allow_guest=True)
 
 def _load_master_data() -> dict:
-    import os
-    candidate_paths = [
-        "/home/mdkamruzzamanirak_gmail_com/Frappe-erp-Alco/alco_ecommerce/alco_ecommerce/alco_master_data.json",
-        "/home/mdkamruzzamanirak_gmail_com/Frappe-erp-Alco/data/alco_master_data.json",
-        "/home/frappe/frappe-bench/apps/alco_ecommerce/alco_master_data.json",
-        os.path.join(os.path.dirname(__file__), "..", "alco_master_data.json"),
-        os.path.join(os.path.dirname(__file__), "alco_master_data.json"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "data", "alco_master_data.json")
-    ]
-    for p in candidate_paths:
-        if os.path.exists(p):
-            try:
-                with open(p, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-    return {}
+    """Bundled field-force / zone master data shipped inside the app (alco_ecommerce/alco_master_data.json)."""
+    path = frappe.get_app_path("alco_ecommerce", "alco_master_data.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        frappe.log_error(title="Alco master data could not be loaded")
+        return {}
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def get_zones_and_markets() -> dict:
     """Returns unique Zones list and cascading Market/MPO Code mapping under each Zone."""
     data = _load_master_data()
@@ -756,15 +795,76 @@ def get_zones_and_markets() -> dict:
         "zone_markets": data.get("zone_markets", {})
     }
 
-@frappe.whitelist(allow_guest=True)
+def _clean_bd_mobile(phone: str | None) -> str:
+    """Normalise to an 11-digit Bangladeshi mobile number (01XXXXXXXXX) or return ''."""
+    digits = re.sub(r"[^\d]", "", phone or "")
+    if digits.startswith("8801") and len(digits) == 13:
+        digits = digits[2:]
+    return digits if len(digits) == 11 and digits.startswith("01") else ""
+
+
+def _first_existing(doctype: str, preferred: str, fallback: str) -> str:
+    return preferred if frappe.db.exists(doctype, preferred) else fallback
+
+
+def _upsert_customer(
+    shop_name: str,
+    phone: str | None = None,
+    email: str | None = None,
+    thana: str | None = None,
+    zone: str | None = None,
+    mpo_code: str | None = None,
+    market: str | None = None,
+    depot: str | None = None,
+    update_existing: bool = True,
+) -> str:
+    """Find (by mobile, then by name) or create a core ERPNext Customer. Returns the Customer name."""
+    mobile = _clean_bd_mobile(phone)
+    alco_fields = {
+        "custom_thana": (thana or "").strip(),
+        "custom_zone": (zone or "").strip(),
+        "custom_mpo_code": (mpo_code or "").strip(),
+        "custom_market": (market or "").strip(),
+        "custom_depot": (depot or "").strip(),
+    }
+    existing = (mobile and frappe.db.get_value("Customer", {"mobile_no": mobile}, "name")) or \
+        frappe.db.get_value("Customer", {"customer_name": shop_name}, "name")
+    if existing:
+        if update_existing:
+            doc = frappe.get_doc("Customer", existing)
+            changed = False
+            for field, value in alco_fields.items():
+                if value and doc.get(field) != value:
+                    doc.set(field, value)
+                    changed = True
+            if changed:
+                doc.save(ignore_permissions=True)
+        return existing
+
+    email = (email or "").strip()
+    doc = frappe.get_doc({
+        "doctype": "Customer",
+        "customer_name": shop_name,
+        "customer_type": "Company",
+        "customer_group": _first_existing("Customer Group", "Commercial", "All Customer Groups"),
+        "territory": _first_existing("Territory", "Bangladesh", "All Territories"),
+        # ERPNext Customer.create_primary_contact() turns these into the primary Contact
+        "mobile_no": mobile or None,
+        "email_id": email if email and frappe.utils.validate_email_address(email) else None,
+        **{k: v for k, v in alco_fields.items() if v},
+    })
+    doc.insert(ignore_permissions=True)
+    return doc.name
+
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+@rate_limit(limit=20, seconds=60, methods="POST")
 def register_customer(shop_name: str, phone: str, email: str = None, thana: str = None, zone: str = None, mpo_code: str = None, market: str = None, depot: str = None) -> dict:
     """Registers / updates customer profile with Shop Name, Phone, Thana, Zone, MPO/Market Code, Depot."""
     if not shop_name or not str(shop_name).strip():
         frappe.throw(_("Name of shop is required."), title=_("Validation Error"))
-    clean_digits = re.sub(r"[^\d]", "", phone or "")
-    if clean_digits.startswith("8801") and len(clean_digits) == 13:
-        clean_digits = clean_digits[2:]
-    if not clean_digits or len(clean_digits) != 11 or not clean_digits.startswith("01"):
+    clean_digits = _clean_bd_mobile(phone)
+    if not clean_digits:
         frappe.throw(_("Valid 11-digit mobile number is required (01XXXXXXXXX)."), title=_("Validation Error"))
     if not zone:
         frappe.throw(_("Zone is required."), title=_("Validation Error"))
@@ -777,9 +877,16 @@ def register_customer(shop_name: str, phone: str, email: str = None, thana: str 
                 if not depot: depot = ff.get("depot", "")
                 if not market: market = ff.get("market", "")
                 break
-                
+
+    # Guests may only create a new Customer; an existing one (matched by mobile/name) is reused untouched,
+    # otherwise anyone who knows a shop's mobile number could overwrite its profile. Logged-in staff can update.
+    customer = _upsert_customer(
+        shop_name=str(shop_name).strip(), phone=clean_digits, email=email, thana=thana,
+        zone=zone, mpo_code=mpo_code, market=market, depot=depot,
+        update_existing=frappe.session.user != "Guest",
+    )
     cust_data = {
-        "name": str(shop_name).strip(),
+        "name": customer,
         "shop_name": str(shop_name).strip(),
         "phone": clean_digits,
         "email": (email or "").strip(),
@@ -791,67 +898,53 @@ def register_customer(shop_name: str, phone: str, email: str = None, thana: str 
         "address": f"{thana or ''}, Zone: {zone}",
         "status": "Active"
     }
-    cust_file = "/home/mdkamruzzamanirak_gmail_com/Frappe-erp-Alco/data/customers_db.json"
-    try:
-        custs = []
-        if os.path.exists(cust_file):
-            with open(cust_file, "r", encoding="utf-8") as f:
-                custs = json.load(f)
-        updated = False
-        for idx, c in enumerate(custs):
-            if c.get("phone") == clean_digits:
-                custs[idx].update(cust_data)
-                updated = True
-                break
-        if not updated:
-            custs.insert(0, cust_data)
-        with open(cust_file, "w", encoding="utf-8") as f:
-            json.dump(custs, f, indent=2, ensure_ascii=False)
-    except Exception:
-        pass
-        
     return {
         "success": True,
         "customer": cust_data,
         "message": _("Customer registered successfully!")
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_customers_list(zone: str = None, search: str = None) -> list[dict]:
-    """Returns chemists / customers from loaded master data and customer registrations"""
-    cust_file = "/home/mdkamruzzamanirak_gmail_com/Frappe-erp-Alco/data/customers_db.json"
-    customers = []
-    if os.path.exists(cust_file):
-        try:
-            with open(cust_file, "r", encoding="utf-8") as f:
-                customers = json.load(f)
-        except Exception:
-            pass
-    if not customers:
-        try:
-            data = _load_master_data()
-            customers = data.get("customers", [])
-        except Exception:
-            customers = []
-    if not customers:
-        customers = [
-            {"name": "Lazz Pharma (Dhanmondi)", "shop_name": "Lazz Pharma (Dhanmondi)", "phone": "01711223344", "email": "lazz@pharma.com", "thana": "Dhanmondi", "zone": "DK.B", "mpo_code": "D067", "market": "DHONIA+JATRABARI", "depot": "DHAKA-1", "address": "Dhanmondi 32, Dhaka", "credit_limit": 50000.0, "due_balance": 12500.0, "status": "Active"},
-            {"name": "Durlob Pharmacy", "shop_name": "Durlob Pharmacy", "phone": "01907430431", "email": "durlob@pharmacy.com", "thana": "Faridpur Sadar", "zone": "FRD.A", "mpo_code": "F011", "market": "MAGURA -2", "depot": "FARIDPUR", "address": "Faridpur Sadar", "credit_limit": 30000.0, "due_balance": 4200.0, "status": "Active"},
-            {"name": "Nipa Pharmacy", "shop_name": "Nipa Pharmacy", "phone": "01688065691", "email": "nipa@pharmacy.com", "thana": "Mirpur", "zone": "DK.A", "mpo_code": "D015", "market": "DDCH+KAZIPARA+MIRPUR-14", "depot": "DHAKA-1", "address": "Mirpur-1, Dhaka", "credit_limit": 40000.0, "due_balance": 8900.0, "status": "Active"},
-            {"name": "Bhai Bon Medical Hall", "shop_name": "Bhai Bon Medical Hall", "phone": "01723543467", "email": "bhaibon@medical.com", "thana": "Kotwali", "zone": "MYM.A", "mpo_code": "B001", "market": "MMCH-3", "depot": "MYMENSINGH", "address": "Mymensingh Town", "credit_limit": 25000.0, "due_balance": 3100.0, "status": "Active"}
-        ]
-        
+    """Back office: chemists / customers from core ERPNext Customer (with Alco custom fields)."""
+    _require_admin()
+    filters = {"disabled": 0}
     if zone and zone != "All":
-        customers = [c for c in customers if c.get("zone") == zone]
+        filters["custom_zone"] = zone
+    or_filters = None
     if search:
-        s = search.lower()
-        customers = [c for c in customers if s in c.get("name", "").lower() or s in c.get("phone", "") or s in c.get("shop_name", "").lower()]
-        
-    return customers[:100]
+        like = f"%{search.strip()}%"
+        or_filters = {"customer_name": ["like", like], "mobile_no": ["like", like], "name": ["like", like]}
+    rows = frappe.get_list(
+        "Customer",
+        filters=filters,
+        or_filters=or_filters,
+        fields=["name", "customer_name", "mobile_no", "email_id", "custom_thana", "custom_zone",
+                "custom_mpo_code", "custom_market", "custom_depot", "disabled"],
+        order_by="modified desc",
+        limit_page_length=100,
+    )
+    return [
+        {
+            "name": r.name,
+            "shop_name": r.customer_name,
+            "phone": r.mobile_no or "",
+            "email": r.email_id or "",
+            "thana": r.custom_thana or "",
+            "zone": r.custom_zone or "",
+            "mpo_code": r.custom_mpo_code or "",
+            "market": r.custom_market or "",
+            "depot": r.custom_depot or "",
+            "address": f"{r.custom_thana or ''}, Zone: {r.custom_zone or ''}",
+            "status": "Disabled" if r.disabled else "Active",
+        }
+        for r in rows
+    ]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_employees_list(zone: str = None, designation: str = None, search: str = None, limit: int = 500) -> list[dict]:
     """Returns real canonical field forces and employees from master data (Master Column: APP CODE (FINAL))"""
+    _require_admin()
     try:
         data = _load_master_data()
         employees = data.get("field_forces") or data.get("employees", [])
@@ -885,14 +978,17 @@ def get_employees_list(zone: str = None, designation: str = None, search: str = 
         
     return employees[:int(limit)]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_field_forces_roster(zone: str = None, search: str = None) -> list[dict]:
     """Returns canonical 453 Master Field Forces roster (Source: filed_jan GID 1918615875)"""
+    _require_admin()
     return get_employees_list(zone=zone, search=search, limit=500)
 
-@frappe.whitelist(allow_guest=True)
+# NOTE: the report endpoints below return STATIC SAMPLE rows (not computed from ERPNext transactions).
+@frappe.whitelist(methods=["GET"])
 def get_operational_report(date_filter: str = None) -> list[dict]:
     """Returns dispatch, delivery status, and challan tracking for Alco Pharma"""
+    _require_admin()
     return [
         {"challan_no": "CH-2026-901", "invoice_no": "INV-ALC-881", "customer": "Lazz Pharma (Dhanmondi)", "zone": "DK.B", "depot": "Dhaka Metro Depot (DK-2)", "items_count": 5, "total_value": 24500.0, "status": "Dispatched", "vehicle_no": "DM-CHA-11-2041", "driver": "Md. Rafiq", "dispatch_time": "25 Aug 2026 10:30 AM"},
         {"challan_no": "CH-2026-902", "invoice_no": "INV-ALC-882", "customer": "Durlob Pharmacy", "zone": "FRD.A", "depot": "Faridpur Depot", "items_count": 3, "total_value": 14200.0, "status": "Delivered", "vehicle_no": "FRD-MA-04-1022", "driver": "Kalam Mia", "dispatch_time": "25 Aug 2026 09:15 AM"},
@@ -901,9 +997,10 @@ def get_operational_report(date_filter: str = None) -> list[dict]:
         {"challan_no": "CH-2026-905", "invoice_no": "INV-ALC-885", "customer": "Ma Pharmacy", "zone": "FRD.A", "depot": "Faridpur Depot", "items_count": 6, "total_value": 22400.0, "status": "Dispatched", "vehicle_no": "FRD-MA-04-1022", "driver": "Kalam Mia", "dispatch_time": "25 Aug 2026 12:00 PM"}
     ]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_sales_report(year: str = "2026", zone: str = "All") -> list[dict]:
     """Comprehensive sales performance by product and zone"""
+    _require_admin()
     return [
         {"item_code": "ALO-PAN-40", "item_name": "Pantopra 40", "pack_size": "40 mg Tablet [42's]", "qty_sold": 18450, "bonus_qty": 1845, "rate": 180.0, "gross_sales": 3321000.0, "vat": 498150.0, "net_sales": 3819150.0},
         {"item_code": "ALO-CAL-500", "item_name": "Calmi 500", "pack_size": "500 mg Tablet [50's]", "qty_sold": 24200, "bonus_qty": 2420, "rate": 80.0, "gross_sales": 1936000.0, "vat": 290400.0, "net_sales": 2226400.0},
@@ -915,9 +1012,10 @@ def get_sales_report(year: str = "2026", zone: str = "All") -> list[dict]:
         {"item_code": "ALO-XCT-100", "item_name": "Xcite 100", "pack_size": "100 mg Tablet [4's]", "qty_sold": 9500, "bonus_qty": 950, "rate": 150.0, "gross_sales": 1425000.0, "vat": 213750.0, "net_sales": 1638750.0}
     ]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_monthly_sales_collection() -> list[dict]:
     """Monthly Sales Target vs Sales Achievement vs Cash Collection"""
+    _require_admin()
     return [
         {"month": "January 2026", "target": 12500000.0, "sales": 12840000.0, "collection": 12100000.0, "achievement_pct": "102.7%", "collection_pct": "94.2%"},
         {"month": "February 2026", "target": 13000000.0, "sales": 13450000.0, "collection": 12900000.0, "achievement_pct": "103.5%", "collection_pct": "95.9%"},
@@ -929,9 +1027,10 @@ def get_monthly_sales_collection() -> list[dict]:
         {"month": "August 2026", "target": 16500000.0, "sales": 14200000.0, "collection": 13800000.0, "achievement_pct": "86.1% (MTD)", "collection_pct": "97.1%"}
     ]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_receivings_list() -> list[dict]:
     """Returns Stock Receiving / GRN (Goods Received Notes)"""
+    _require_admin()
     return [
         {"grn_no": "GRN-2026-0811", "date": "24 Aug 2026", "invoice": "PLANT-INV-7741", "supplier": "Alco Pharma Plant (Mirpur-7)", "depot": "Dhaka Central Depot (DK-1)", "items_count": 4, "amount_paid": 450000.0, "total_amount": 450000.0, "status": "Verified"},
         {"grn_no": "GRN-2026-0810", "date": "22 Aug 2026", "invoice": "PLANT-INV-7738", "supplier": "Alco Pharma Plant (Mirpur-7)", "depot": "Chattogram Depot", "items_count": 6, "amount_paid": 620000.0, "total_amount": 620000.0, "status": "Verified"},
@@ -939,9 +1038,10 @@ def get_receivings_list() -> list[dict]:
         {"grn_no": "GRN-2026-0808", "date": "18 Aug 2026", "invoice": "PLANT-INV-7729", "supplier": "Alco Pharma Plant (Mirpur-7)", "depot": "Faridpur Depot", "items_count": 3, "amount_paid": 290000.0, "total_amount": 290000.0, "status": "Verified"}
     ]
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_customer_sales_return() -> list[dict]:
     """Returns customer-wise sales and returns analysis"""
+    _require_admin()
     return [
         {"customer": "Lazz Pharma (Dhanmondi)", "zone": "DK.B", "gross_sales": 245000.0, "returns": 3200.0, "net_sales": 241800.0, "return_reason": "Near Expiry Batches (Replaced)"},
         {"customer": "Durlob Pharmacy", "zone": "FRD.A", "gross_sales": 142000.0, "returns": 1100.0, "net_sales": 140900.0, "return_reason": "Transit Box Damage (Adjusted)"},
@@ -949,19 +1049,24 @@ def get_customer_sales_return() -> list[dict]:
         {"customer": "Bhai Bon Medical Hall", "zone": "MYM.A", "gross_sales": 112000.0, "returns": 850.0, "net_sales": 111150.0, "return_reason": "Doctor Prescription Shift"}
     ]
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def update_product_details(item_code: str, offer_price: float, stock_qty: float = None) -> dict:
     """Updates product price in canonical ERPNext tabItem Price"""
+    _require_admin()
     if not item_code:
         frappe.throw(_("Item Code is required."))
+    if not frappe.db.exists("Item", item_code):
+        frappe.throw(_("Item {0} does not exist.").format(item_code))
 
     price_name = frappe.db.get_value(
         "Item Price",
-        {"item_code": item_code, "price_list": "Standard Selling", "currency": "BDT"},
+        {"item_code": item_code, "price_list": "Standard Selling", "currency": "BDT", "uom": "Box"},
         "name"
     )
     if price_name:
-        frappe.db.set_value("Item Price", price_name, "price_list_rate", float(offer_price))
+        doc = frappe.get_doc("Item Price", price_name)
+        doc.price_list_rate = float(offer_price)
+        doc.save()  # core Item Price validation + permissions
     else:
         doc = frappe.new_doc("Item Price")
         doc.item_code = item_code
@@ -969,10 +1074,8 @@ def update_product_details(item_code: str, offer_price: float, stock_qty: float 
         doc.price_list_rate = float(offer_price)
         doc.currency = "BDT"
         doc.uom = "Box"
-        doc.insert(ignore_permissions=True)
+        doc.insert()
 
-    frappe.clear_cache(doctype="Item Price")
-    frappe.db.commit()
     return {"success": True, "message": f"Product {item_code} price updated in ERPNext to {offer_price} BDT."}
 
 def seed_all_demo_data():

@@ -35,3 +35,17 @@ home_page = "alco-order"
 # role_home_page = {
 # 	"Alco Field Agent": "alco-order",
 # }
+
+# Fixtures
+# --------
+# Custom Fields this app adds to core ERPNext DocTypes (Item, Customer).
+# Synced automatically on install and on `bench migrate`
+# (local docs: frappe-docs-latest/framework/user/en/guides/app-development/how-to-create-custom-fields-during-app-installation.md).
+fixtures = [
+	{"dt": "Custom Field", "filters": [["module", "=", "Alco Ecommerce"]]},
+]
+
+# Installation
+# ------------
+# (local docs: frappe-docs-latest/framework/user/en/python-api/hooks.md#install-hooks)
+after_install = "alco_ecommerce.install.after_install"
